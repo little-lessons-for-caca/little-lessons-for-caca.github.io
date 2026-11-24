@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Day and Night?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a playful picture-book game for 5-year-olds, led by a teacher on a projector or tablet
+   IDEA: the torch-and-ball model, seen from above the North Pole, with two animal friends living on the ball
+   PICTURE: a fixed smiling Sun, a turning Earth, Mimi the cat and Sam the bear, and their two skies
+   COLOUR and TYPE: space navy, sun yellow, ocean blue, land green, coral accent; Baloo 2 800/500
+   LAYOUT: one screen: tabs, scene with two sky windows, one big sentence, big buttons */
+:root{color-scheme:dark;--bg:#0b1433;--ink:#f3f6ff;--muted:#aab6dc;--sun:#ffcc33;--coral:#ff6b4a;--card:#16224d;--line:#2a3a74}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Baloo 2",system-ui,sans-serif;overflow-x:clip}
+.app{max-width:1400px;margin:0 auto;padding:10px max(3vw,12px) 24px;position:relative}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+h1{font-weight:800;font-size:clamp(22px,3vw,34px);line-height:1.05;margin:0;flex:1 1 260px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;color:inherit;cursor:pointer;border-radius:999px;min-height:48px;padding:0 20px;background:var(--card);border:1px solid var(--line);font-weight:800}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.tabs button[aria-pressed=true][data-m]{background:var(--sun);color:#0b1433;border-color:var(--sun)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,24%);gap:12px}
+.stage{position:relative;background:radial-gradient(ellipse at 65% 50%,#15245a 0%,#0b1433 70%);border-radius:24px;border:1px solid var(--line);overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:calc(100vh - 270px);min-height:240px;touch-action:none}
+#earth{cursor:grab}
+[data-kid],#sun,#moon{cursor:pointer}#sun:focus:not(:focus-visible),#moon:focus:not(:focus-visible){outline:none}
+#moon{transform-box:fill-box;transform-origin:center}#moon.hop{animation:hop .5s ease 2}
+.status{position:absolute;top:12px;right:14px;font-weight:800;font-size:clamp(20px,3vw,32px);padding:2px 18px;border-radius:999px;background:#ffcc3340}
+.skies{display:grid;gap:12px;align-content:start}
+.sky{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px}
+.sky h2{font-size:19px;margin:0 0 4px;font-weight:800}
+.sky svg{display:block;width:100%;height:auto;border-radius:10px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:12px 16px;min-height:96px}
+#caption{flex:1 1 320px;font-weight:800;font-size:clamp(22px,2.8vw,34px);line-height:1.2;margin:0}
+.big{background:var(--coral);color:#fff;border:0;font-size:24px;min-height:68px;padding:0 34px;box-shadow:0 6px 0 #b8432c;user-select:none;-webkit-user-select:none}
+#spin{touch-action:none}
+#spin.on{transform:translateY(4px);box-shadow:0 2px 0 #b8432c;animation:none}
+@keyframes nudge{0%,55%,100%{transform:rotate(0) scale(1)}62%{transform:rotate(-5deg) scale(1.08)}70%{transform:rotate(5deg) scale(1.08)}78%{transform:rotate(-4deg) scale(1.05)}86%{transform:rotate(4deg) scale(1.05)}}
+#spin.nudge{animation:nudge 1.7s infinite}
+#choices{display:flex;gap:12px;flex-wrap:wrap}
+.ans{display:inline-flex;align-items:center;gap:10px;font-size:26px;min-height:76px;padding:0 26px;background:#22336e}
+.ans svg{width:48px;height:48px}
+#stars{display:flex;gap:2px;flex-wrap:wrap}
+#stars svg{width:28px;height:28px}
+[hidden]{display:none!important}
+body.hide-skies .skies{visibility:hidden}
+#startScreen{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#0b1433e6;border-radius:24px}
+#startScreen button{font-size:clamp(30px,5vw,54px);min-height:120px;padding:0 60px}
+details{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 18px}
+summary{font-weight:800;font-size:20px;cursor:pointer;min-height:44px;display:flex;align-items:center}
+details h3{font-size:18px;margin:14px 0 2px;font-weight:800;color:var(--sun)}
+details p,details li{max-width:70ch;font-weight:500}
+details ol,details ul{margin:4px 0;padding-left:22px}
+.kin{transform-box:fill-box;transform-origin:50% 100%}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-16px) scale(1.08,.94)}60%{transform:translateY(0) scale(.95,1.06)}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pulse{0%,100%{stroke-opacity:.15}50%{stroke-opacity:1}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.hop{animation:hop .5s ease 2}
+#sun.shake{animation:wiggle .6s ease}
+#ring,#sunRing{animation:pulse 1.2s infinite}
+.conf{position:fixed;top:-20px;width:14px;height:14px;border-radius:3px;z-index:9;pointer-events:none;animation:fall 2.6s linear forwards}
+@media (prefers-reduced-motion:reduce){#spin.nudge,.hop,#sun.shake,#ring,#sunRing{animation:none}.conf{display:none}}
+@media(max-width:800px){.main{grid-template-columns:1fr}.skies{grid-template-columns:1fr 1fr}.stage svg{max-height:none}.big{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Why do we have day and night?</h1>
+    <div class="tabs">
+      <button data-m="adv" aria-pressed="true">Adventure</button>
+      <button data-m="play" aria-pressed="false">Free play</button>
+      <button id="sound" aria-pressed="true">Sound: on</button>
+      <button id="full">Full screen</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stage">
+      <div class="status" id="status" hidden>Day 1</div>
+      <svg id="scene" viewBox="0 -100 1060 780" aria-label="The Sun shining on the turning Earth">
+        <defs>
+          <radialGradient id="sunGlow"><stop offset="0" stop-color="#ffe680" stop-opacity=".55"/><stop offset="1" stop-color="#ffcc33" stop-opacity="0"/></radialGradient>
+          <linearGradient id="shade" x1="0" x2="1"><stop offset="0" stop-color="#050a22" stop-opacity="0"/><stop offset=".12" stop-color="#050a22" stop-opacity=".78"/><stop offset="1" stop-color="#050a22" stop-opacity=".82"/></linearGradient>
+          <clipPath id="earthClip"><circle cx="640" cy="290" r="190"/></clipPath>
+        </defs>
+        <g id="stars0"></g>
+        <g stroke="#ffe680" stroke-opacity=".4" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 22">
+          <line x1="250" y1="190" x2="440" y2="170"/><line x1="255" y1="290" x2="435" y2="290"/><line x1="250" y1="390" x2="440" y2="410"/>
+        </g>
+        <circle id="sunRing" cx="150" cy="290" r="150" fill="none" stroke="#fff" stroke-width="8" display="none"/>
+        <g id="sun" tabindex="0" role="button" aria-label="The Sun">
+          <circle cx="150" cy="290" r="170" fill="url(#sunGlow)"/>
+          <g id="rays" stroke="#ffcc33" stroke-width="10" stroke-linecap="round"></g>
+          <circle cx="150" cy="290" r="92" fill="#ffcc33" stroke="#ffb300" stroke-width="6"/>
+          <circle cx="120" cy="274" r="11" fill="#5a3b00"/><circle cx="124" cy="270" r="4" fill="#fff"/>
+          <circle id="sunEye" cx="180" cy="274" r="11" fill="#5a3b00"/><circle id="sunEyeHi" cx="184" cy="270" r="4" fill="#fff"/>
+          <path id="sunWink" d="M168 276 Q180 264 192 276" stroke="#5a3b00" stroke-width="7" fill="none" stroke-linecap="round" display="none"/>
+          <path d="M116 308 Q150 344 184 308" stroke="#5a3b00" stroke-width="7" fill="#ff8a5c" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="100" cy="302" rx="13" ry="9" fill="#ff8a5c" opacity=".6"/><ellipse cx="200" cy="302" rx="13" ry="9" fill="#ff8a5c" opacity=".6"/>
+        </g>
+        <text x="150" y="480" text-anchor="middle" fill="#ffe680" font-size="36" font-weight="800">Sun</text>
+        <g id="earth">
+          <circle cx="640" cy="290" r="255" fill="transparent"/>
+          <g id="spinGroup">
+            <circle cx="640" cy="290" r="190" fill="#2f86d6"/>
+            <g fill="#5cbf6a" clip-path="url(#earthClip)">
+              <path d="M560 150 q50 -40 110 -10 q40 30 10 70 q-30 40 -90 20 q-50 -20 -30 -80z"/>
+              <path d="M700 330 q60 -20 90 30 q10 50 -40 70 q-60 10 -70 -40 q-5 -40 20 -60z"/>
+              <path d="M500 300 q30 -30 60 0 q20 40 -10 70 q-40 20 -55 -20 q-5 -30 5 -50z"/>
+              <path d="M720 170 q40 0 50 30 q-10 30 -45 25 q-25 -20 -5 -55z"/>
+            </g>
+            <g fill="#fff" opacity=".8"><ellipse cx="600" cy="240" rx="26" ry="10"/><ellipse cx="618" cy="232" rx="16" ry="9"/><ellipse cx="700" cy="290" rx="22" ry="8"/><ellipse cx="580" cy="390" rx="24" ry="9"/></g>
+            <g id="kidA" data-kid="A"></g><g id="kidB" data-kid="B"></g>
+          </g>
+          <g clip-path="url(#earthClip)" pointer-events="none"><rect x="628" y="90" width="210" height="400" fill="url(#shade)"/></g>
+          <circle cx="640" cy="290" r="190" fill="none" stroke="#9cc8ff" stroke-opacity=".5" stroke-width="3" pointer-events="none"/>
+        </g>
+        <g id="moon" tabindex="0" role="button" aria-label="The Moon">
+          <circle cx="986" cy="490" r="32" fill="#e4e6f2"/>
+          <path d="M986 458a32 32 0 0 1 0 64z" fill="#0b1433" opacity=".45"/>
+          <circle cx="972" cy="474" r="5" fill="#c3c7da"/><circle cx="966" cy="498" r="3.5" fill="#c3c7da"/><circle cx="984" cy="508" r="4" fill="#c3c7da"/>
+          <circle cx="976" cy="488" r="3" fill="#3a2a2a"/><circle cx="994" cy="488" r="3" fill="#3a2a2a"/><path d="M979 497q6 5 12 0" stroke="#3a2a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </g>
+        <text x="986" y="552" text-anchor="middle" fill="#e4e6f2" font-size="26" font-weight="800" pointer-events="none">Moon</text>
+        <circle id="ring" r="95" fill="none" stroke="#fff" stroke-width="7" display="none" pointer-events="none"/>
+        <g pointer-events="none" font-weight="800" font-size="30" text-anchor="middle">
+          <text id="labA" fill="#ffd36b">Mimi</text><text id="labB" fill="#9fe3b0">Sam</text>
+        </g>
+      </svg>
+    </div>
+    <div class="skies">
+      <div class="sky"><h2>Mimi's sky</h2><svg id="skyA" viewBox="0 0 320 140"></svg></div>
+      <div class="sky"><h2>Sam's sky</h2><svg id="skyB" viewBox="0 0 320 140"></svg></div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <p id="caption" aria-live="polite">Tap Start to begin.</p>
+    <span id="stars"></span>
+    <button id="spin" class="big" aria-label="Hold to turn the Earth" hidden>Hold to turn!</button>
+    <span id="choices" hidden></span>
+    <button id="replay" hidden>Hear it again</button>
+    <button id="again" class="big" hidden>Play again</button>
+  </div>
+  <div id="startScreen"><button class="big" id="start">Start</button></div>
+
+  <details>
+    <summary>Teacher notes</summary>
+    <h3>Learning goal</h3>
+    <p>Children can say: the Sun stays still, the Earth turns, the side facing the Sun has day and the other side has night.</p>
+    <h3>Key words</h3>
+    <p>Sun, Earth, turn, day, night, bright, dark.</p>
+    <h3>Before the screen (5 minutes)</h3>
+    <ol><li>Darken the room. Hold a torch still: "This is the Sun."</li><li>Put a sticker on a ball: "This is the Earth. The sticker is us."</li><li>Turn the ball slowly. Ask: "Is our sticker in the light or in the dark?"</li></ol>
+    <h3>On the screen (10 minutes)</h3>
+    <ol><li><b>Adventure</b>: nine small jobs, each worth a star. Children tap Mimi the cat, Sam the bear and the Sun, turn the Earth to put Mimi to bed and wake her up, and answer two picture questions. Let a different child do each job.</li><li><b>Free play</b>: push the Earth and let go to spin it, count the days, and tap the friends to hear what they say.</li></ol>
+    <h3>After the screen (5 minutes)</h3>
+    <p>Each child is the Earth. Stand facing a lamp: "Day!" Turn slowly on the spot until the lamp is behind you: "Night!" Keep turning: "Good morning!"</p>
+    <h3>What is simplified</h3>
+    <ul><li>We look down on the Earth from above the North Pole, so it turns anticlockwise.</li><li>The real Earth takes one whole day, 24 hours, to turn once.</li><li>The sizes, the distance and the shapes of the land are not real.</li><li>The Moon stays in one place here. The real Moon goes slowly around the Earth, about once a month, so its place in the sky changes from day to day.</li></ul>
+    <p>The voices are computer-generated recordings that come with this page.</p>
+  </details>
+</div>
+
+<script>
+{
+const L={"n_start": "Hello, friends! Let's find out why we have day and night.", "n_m1": "First, let's say hello. Can you tap Mimi the cat?", "n_m2": "Now find Sam the bear. Tap Sam!", "n_m3": "Look at that big, bright Sun. Give it a tap!", "n_m4": "Mimi is getting sleepy. Turn the Earth, and take Mimi to the dark side.", "n_m4ok": "Shh. It's night time for Mimi. Good night, Mimi!", "n_m5": "Mimi is fast asleep. But who is awake now? Tap the friend who is awake!", "n_m5ok": "That's right! When it's night for Mimi, it's daytime for Sam.", "n_m6": "Time to wake up! Turn the Earth, and bring Mimi back to the sunshine.", "n_m6ok": "Good morning, Mimi! The Sun is shining on you again.", "n_m7": "Now look at Sam. What can Sam see in the sky? The Sun, or the Moon?", "n_m7ok": "Yes! Sam is on the dark side now, so Sam sees the Moon.", "n_m8": "Here's a tricky one. Which one was turning? The Sun, or the Earth?", "n_m8ok": "You got it! The Sun stays still. The Earth is the one that turns.", "n_m9": "Last one! Spin the Earth all the way around. One whole turn!", "n_m9ok": "Wow! One whole turn is one whole day.", "n_fin": "You did it! The Earth keeps turning, and that's why we have day and night. Great job, everyone!", "n_try": "Oops! Have another look.", "n_hint5": "Look for the friend with open eyes.", "n_hint7": "Hmm. Is Sam on the bright side, or the dark side?", "n_hint8": "Remember what the Sun told us!", "n_play": "Play time! Spin the Earth, and tap your friends.", "n_day": "One more day!", "a_hi": "Hi! I'm Mimi! I live in Hong Kong.", "a_1": "Hello!", "a_2": "Let's play!", "a_3": "I love sunny days!", "a_s1": "Shh. I'm sleeping.", "a_s2": "Five more minutes, please.", "a_whee": "Wheee! So fast!", "a_morning": "Good morning!", "a_night": "Good night!", "b_hi": "Hello! I'm Sam! I live far, far away.", "b_1": "Hi there!", "b_2": "What a lovely day!", "b_s1": "Zzz. I'm dreaming of honey.", "b_s2": "Shh. Bears need their sleep.", "b_whee": "Whoa! I'm getting dizzy!", "s_hi": "Hello! I'm the Sun! I stay right here, and I shine all day long.", "s_2": "I never move. The Earth does the turning!", "s_3": "Ha ha! That tickles!", "m_hi": "Hi! I'm the Moon. I go slowly around the Earth.", "m_2": "I shine at night, with light from the Sun."};
+const CX=640,CY=290,R=190,A0=150,SPEED=45,MOON=330;
+const $=id=>document.getElementById(id);
+let theta=0,vel=0,glide=null,holding=false,lastT=null,soundOn=true,mode='adv',token=0;
+let mi=0,busy=true,ringOn=null,spinStart=0,lastKey='n_start',started=false;
+let dayCount=0,prevA=null,wheeAt=0,idx={A:0,B:0,S:0,M:0},drag=null,actx=null;
+const va=new Audio();
+
+const ICON={
+ sun:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="13" fill="#ffcc33"/><g stroke="#ffcc33" stroke-width="4" stroke-linecap="round"><path d="M24 2v6M24 40v6M2 24h6M40 24h6M8 8l5 5M35 35l5 5M8 40l5-5M35 13l5-5"/></g></svg>',
+ moon:'<svg viewBox="0 0 48 48"><path d="M32 6a19 19 0 1 0 10 28A15 15 0 0 1 32 6z" fill="#f4f1c9"/></svg>',
+ earth:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="19" fill="#2f86d6"/><path d="M14 14q8-6 14 0q2 8-6 9q-9 0-8-9zM28 28q8-2 9 6q-3 7-9 4q-3-5 0-10z" fill="#5cbf6a"/></svg>'
+};
+const M=[
+ {say:'n_m1',type:'tap',target:'A',ok:'a_hi'},
+ {say:'n_m2',type:'tap',target:'B',ok:'b_hi'},
+ {say:'n_m3',type:'tap',target:'S',ok:'s_hi'},
+ {say:'n_m4',type:'turn',goal:'Night',ok:'n_m4ok',to:210},
+ {say:'n_m5',type:'tap',target:'B',ok:'n_m5ok',hint:'n_hint5',noRing:true},
+ {say:'n_m6',type:'turn',goal:'Day',ok:'n_m6ok',to:30},
+ {say:'n_m7',type:'choice',opts:[['sun','The Sun'],['moon','The Moon']],ans:'moon',ok:'n_m7ok',hint:'n_hint7',hideSky:true},
+ {say:'n_m8',type:'choice',opts:[['sun','The Sun'],['earth','The Earth']],ans:'earth',ok:'n_m8ok',hint:'n_hint8'},
+ {say:'n_m9',type:'spin',ok:'n_m9ok'}
+];
+const KID={A:{awake:['a_1','a_2','a_3'],asleep:['a_s1','a_s2'],whee:'a_whee'},B:{awake:['b_1','b_2'],asleep:['b_s1','b_s2'],whee:'b_whee'}};
+
+/* sound */
+function tone(f,t0,d,type,g){try{if(!actx||!soundOn)return;const o=actx.createOscillator(),a=actx.createGain();o.type=type||'sine';o.frequency.value=f;a.gain.setValueAtTime(g||.18,actx.currentTime+t0);a.gain.exponentialRampToValueAtTime(.001,actx.currentTime+t0+d);o.connect(a).connect(actx.destination);o.start(actx.currentTime+t0);o.stop(actx.currentTime+t0+d)}catch(e){}}
+const sfx={ding(){tone(784,0,.18);tone(1047,.12,.18);tone(1319,.24,.35)},boop(){tone(220,0,.25,'triangle',.2)},pop(){tone(660,0,.12,'triangle')}};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function play(key){
+  lastKey=key;$('caption').textContent=L[key];
+  const dur=L[key].length*65+700;
+  return new Promise(res=>{
+    let done=false;const fin=()=>{if(!done){done=true;res()}};
+    if(!soundOn){setTimeout(fin,dur);return}
+    try{va.onended=fin;va.onerror=()=>setTimeout(fin,dur);va.src='a/'+key+'.mp3';const p=va.play();if(p&&p.catch)p.catch(()=>setTimeout(fin,dur))}catch(e){setTimeout(fin,dur)}
+    setTimeout(fin,dur+6000);
+  });
+}
+
+/* drawing */
+let s='';for(let i=0;i<80;i++){const x=(i*137.5)%1060,y=(i*432.6)%780-100;s+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)+1}" fill="#fff" opacity="${.2+(i%4)*.12}"/>`}
+$('stars0').innerHTML=s;
+let r='';for(let i=0;i<12;i++){const a=i*Math.PI/6;r+=`<line x1="${150+Math.cos(a)*108}" y1="${290+Math.sin(a)*108}" x2="${150+Math.cos(a)*134}" y2="${290+Math.sin(a)*134}"/>`}
+$('rays').innerHTML=r;
+
+const face=(nose,mouth,z)=>`<g class="awake"${z?' style="display:none"':''}><circle cx="-8" cy="-54" r="4.6" fill="#3a2a2a"/><circle cx="8" cy="-54" r="4.6" fill="#3a2a2a"/><circle cx="-6.4" cy="-55.8" r="1.7" fill="#fff"/><circle cx="9.6" cy="-55.8" r="1.7" fill="#fff"/>${mouth}</g>
+ <g class="asleep"${z?'':' style="display:none"'}><path d="M-13 -54 Q-8 -49 -3 -54 M3 -54 Q8 -49 13 -54" stroke="#3a2a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/><ellipse cx="0" cy="-42.5" rx="2.2" ry="1.6" fill="#3a2a2a"/>
+ <path d="M-21 -64 Q-2 -100 26 -84 L19 -62 Q0 -74 -21 -64Z" fill="#7c8cff"/><path d="M-21 -64 Q0 -76 19 -62" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="28" cy="-86" r="6" fill="#fff"/>
+ <text x="30" y="-98" fill="#fff" font-size="17" font-weight="800">z z</text></g>
+ <ellipse cx="-15" cy="-46" rx="4.5" ry="2.8" fill="#ff8fa8" opacity=".85"/><ellipse cx="15" cy="-46" rx="4.5" ry="2.8" fill="#ff8fa8" opacity=".85"/>${nose}`;
+function cat(z){const f='#fff3e0',e='#f0c9a0';return `<g class="kin">
+ <path d="M12 -8 Q34 -6 28 -30" stroke="${f}" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <ellipse cx="-7" cy="-2" rx="7" ry="4.5" fill="${f}"/><ellipse cx="7" cy="-2" rx="7" ry="4.5" fill="${f}"/>
+ <path d="M-15 -4 Q-17 -34 0 -34 Q17 -34 15 -4Z" fill="#ff7aa2"/><circle cx="0" cy="-20" r="2.5" fill="#fff"/><circle cx="0" cy="-11" r="2.5" fill="#fff"/>
+ <ellipse cx="-17" cy="-24" rx="5" ry="8" fill="${f}" transform="rotate(35 -17 -24)"/><ellipse cx="17" cy="-24" rx="5" ry="8" fill="${f}" transform="rotate(-35 17 -24)"/>
+ <path d="M-21 -60 L-19 -84 L-3 -72Z" fill="${f}" stroke="${e}" stroke-width="1.5" stroke-linejoin="round"/><path d="M21 -60 L19 -84 L3 -72Z" fill="${f}" stroke="${e}" stroke-width="1.5" stroke-linejoin="round"/>
+ <path d="M-17 -66 L-16 -77 L-9 -71Z" fill="#ffb3c7"/><path d="M17 -66 L16 -77 L9 -71Z" fill="#ffb3c7"/>
+ <ellipse cx="0" cy="-52" rx="24" ry="21" fill="${f}" stroke="${e}" stroke-width="1.5"/>
+ <path d="M-24 -50 h-9 M-24 -45 l-8 3 M24 -50 h9 M24 -45 l8 3" stroke="${e}" stroke-width="1.6" stroke-linecap="round"/>
+ ${face('<path d="M-2.6 -49 h5.2 l-2.6 3z" fill="#ff7aa2"/>','<path d="M-6 -44 Q-3 -40 0 -44 Q3 -40 6 -44" stroke="#3a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>',z)}</g>`}
+function bear(z){const f='#c98a5a',m='#f6dfc4';return `<g class="kin">
+ <ellipse cx="-8" cy="-2" rx="8" ry="5" fill="${f}"/><ellipse cx="8" cy="-2" rx="8" ry="5" fill="${f}"/>
+ <ellipse cx="0" cy="-18" rx="17" ry="18" fill="${f}"/><ellipse cx="0" cy="-15" rx="10" ry="11" fill="${m}"/>
+ <ellipse cx="-19" cy="-24" rx="5.5" ry="9" fill="${f}" transform="rotate(35 -19 -24)"/><ellipse cx="19" cy="-24" rx="5.5" ry="9" fill="${f}" transform="rotate(-35 19 -24)"/>
+ <circle cx="-18" cy="-70" r="9" fill="${f}"/><circle cx="18" cy="-70" r="9" fill="${f}"/><circle cx="-18" cy="-70" r="4.5" fill="${m}"/><circle cx="18" cy="-70" r="4.5" fill="${m}"/>
+ <ellipse cx="0" cy="-52" rx="24" ry="21" fill="${f}"/>
+ <rect x="-15" y="-35" width="30" height="8" rx="4" fill="#4aa3ff"/><rect x="5" y="-33" width="8" height="16" rx="3" fill="#4aa3ff"/>
+ <ellipse cx="0" cy="-45" rx="10" ry="7.5" fill="${m}"/>
+ ${face('<ellipse cx="0" cy="-48.5" rx="3.8" ry="2.6" fill="#3a2a2a"/>','<path d="M-4 -43.5 Q0 -40 4 -43.5" stroke="#3a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>',z)}</g>`}
+function place(id,ang,html){const a=ang*Math.PI/180,g=$(id);g.setAttribute('transform',`translate(${CX+(R-4)*Math.cos(a)} ${CY-(R-4)*Math.sin(a)}) rotate(${90-ang}) scale(1.75)`);g.innerHTML=html}
+place('kidA',A0,cat());place('kidB',A0+180,bear());
+
+const norm=a=>((a%360)+360)%360;
+function phase(a){a=norm(a);if(a>=75&&a<105)return'Sunrise';if(a>=105&&a<255)return'Day';if(a>=255&&a<285)return'Sunset';return'Night'}
+const asleep=k=>phase(A0+theta+(k==='B'?180:0))==='Night';
+const mix=(c1,c2,t)=>{const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));const a=p(c1),b=p(c2);return'#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+function drawSky(id,ang,k){
+  const a=norm(ang),e=Math.cos((a-180)*Math.PI/180);
+  let col;if(e>.25)col='#6ec3ff';else if(e>-.05)col=mix('#ff9e5e','#6ec3ff',(e+.05)/.3);else col=mix('#0d1640','#ff9e5e',Math.max(0,(e+.35)/.3));
+  let h=`<rect width="320" height="140" fill="${col}"/>`;
+  const night=e<0?Math.min(1,-e*3):0;
+  for(let i=0;i<14;i++)h+=`<circle cx="${(i*53)%310+5}" cy="${(i*29)%80+8}" r="1.8" fill="#fff" opacity="${night}"/>`;
+  const mr=((a-MOON+540)%360)-180;if(Math.abs(mr)<96){const t=(mr+90)/180,x=20+t*280,y=118-Math.sin(Math.PI*Math.min(1,Math.max(0,t)))*84;h+=`<g opacity="${.5+.5*night}"><circle cx="${x}" cy="${y}" r="13" fill="#f4f1c9"/><circle cx="${x-4}" cy="${y-3}" r="2.5" fill="#d9d5a8"/><circle cx="${x+4}" cy="${y+4}" r="2" fill="#d9d5a8"/></g>`}
+  if(a>78&&a<282){const t=(a-90)/180,x=20+t*280,y=118-Math.sin(Math.PI*Math.min(1,Math.max(0,t)))*90;h+=`<circle cx="${x}" cy="${y}" r="17" fill="#ffcc33"/>`}
+  h+=`<path d="M0 118 Q80 104 160 116 T320 112 V140 H0Z" fill="#3f8f4a"/><rect x="40" y="96" width="34" height="26" fill="#e9d3b0"/><path d="M36 98 L57 80 L78 98Z" fill="#c8553d"/><rect x="52" y="106" width="10" height="16" fill="#7a4b2a"/>`;
+  const z=phase(ang)==='Night';h+=`<g transform="translate(284 134) scale(.92)">${k==='A'?cat(z):bear(z)}</g>`;
+  $(id).innerHTML=h;
+}
+function setSleep(id,z){const g=$(id);g.querySelector('.awake').style.display=z?'none':'';g.querySelector('.asleep').style.display=z?'':'none'}
+function at(ang,rr){const a=norm(ang)*Math.PI/180;return[CX+rr*Math.cos(a),CY-rr*Math.sin(a)]}
+function lab(id,ang){const p=at(ang,R+91),up=Math.sin(norm(ang)*Math.PI/180)>-.35,e=$(id);e.setAttribute('x',p[0]);e.setAttribute('y',p[1]+(up?-62:92))}
+function hop(k){const g=$('kid'+k).querySelector('.kin');g.classList.remove('hop');try{void g.getBBox()}catch(e){}g.classList.add('hop')}
+function drawStars(n){$('stars').innerHTML=M.map((_,i)=>`<svg viewBox="0 0 34 34"><path d="M17 2l4.6 9.6 10.4 1.4-7.6 7.3 1.9 10.4L17 25.6 7.7 30.7l1.9-10.4L2 13l10.4-1.4z" fill="${i<n?'#ffcc33':'#2a3a74'}"/></svg>`).join('')}
+function confetti(){const c=['#ffcc33','#ff6b4a','#5cbf6a','#6ec3ff','#ff7aa2'];for(let i=0;i<60;i++){const d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=c[i%5];d.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}}
+
+function render(){
+  $('spinGroup').setAttribute('transform',`rotate(${-theta} ${CX} ${CY})`);
+  const a=A0+theta,b=a+180,pa=phase(a);
+  setSleep('kidA',pa==='Night');setSleep('kidB',phase(b)==='Night');
+  let p;lab('labA',a);lab('labB',b);
+  drawSky('skyA',a,'A');drawSky('skyB',b,'B');
+  const ring=$('ring');
+  if(ringOn==='A'||ringOn==='B'){p=at(ringOn==='A'?a:b,R+70);ring.setAttribute('cx',p[0]);ring.setAttribute('cy',p[1]);ring.setAttribute('display','')}else ring.setAttribute('display','none');
+  $('sunRing').setAttribute('display',ringOn==='S'?'':'none');
+  if(mode==='adv'&&!busy&&mi<M.length){const m=M[mi];
+    if(m.type==='turn'&&pa===m.goal)win();
+    else if(m.type==='spin'&&theta-spinStart>=360)win();
+  }
+  if(mode==='play'&&started){
+    const d=Math.floor(theta/360);
+    if(d>dayCount){dayCount=d;$('status').textContent='Day '+(d+1);sfx.pop()}
+    if(prevA&&pa!==prevA&&Math.abs(vel)<200){if(pa==='Sunrise')play('a_morning');if(pa==='Night')play('a_night')}
+  }
+  prevA=pa;
+}
+
+/* adventure */
+function canTurn(){if(!started)return false;if(mode==='play')return true;const m=M[mi];return !!m&&!busy&&(m.type==='turn'||m.type==='spin')}
+function showUI(){
+  const m=mode==='adv'?M[mi]:null,turn=mode==='play'||(m&&(m.type==='turn'||m.type==='spin'));
+  $('spin').hidden=!turn;$('spin').classList.toggle('nudge',!!(mode==='adv'&&turn&&!busy));$('again').hidden=!(mode==='adv'&&mi>=M.length);
+  $('replay').hidden=!(m);$('stars').hidden=mode!=='adv';$('status').hidden=mode!=='play';
+  const c=$('choices');c.hidden=!(m&&m.type==='choice');
+  if(m&&m.type==='choice')c.innerHTML=m.opts.map(o=>`<button class="ans" data-a="${o[0]}">${ICON[o[0]]}${o[1]}</button>`).join('');
+  document.body.classList.toggle('hide-skies',!!(m&&m.hideSky&&!busy));
+}
+function ask(){
+  const m=M[mi];busy=false;ringOn=null;vel=0;spinStart=theta;showUI();render();play(m.say);
+}
+async function win(){
+  const m=M[mi],tk=token;busy=true;vel=0;holding=false;ringOn=null;sfx.ding();drawStars(mi+1);hop('A');hop('B');showUI();
+  if(m.to!==undefined){let g=Math.floor(theta/360)*360+m.to;if(g<theta)g+=360;glide=g}
+  render();await play(m.ok);await wait(600);
+  if(tk!==token)return;
+  mi++;
+  if(mi<M.length)ask();else{showUI();confetti();sfx.ding();play('n_fin')}
+}
+function miss(){const m=M[mi];sfx.boop();if(m.type==='tap'&&!m.noRing)ringOn=m.target;render();play(m.hint||'n_try')}
+function tapKid(k){
+  hop(k);
+  if(mode==='adv'&&mi<M.length){if(busy)return;const m=M[mi];if(m.type==='tap'){m.target===k?win():miss();return}}
+  else if(mode==='adv'&&busy)return;
+  const set=KID[k][asleep(k)?'asleep':'awake'];play(set[idx[k]++%set.length]);
+}
+function tapSun(){
+  const sun=$('sun');sun.classList.remove('shake');try{void sun.getBBox()}catch(e){}sun.classList.add('shake');
+  $('sunEye').setAttribute('display','none');$('sunEyeHi').setAttribute('display','none');$('sunWink').setAttribute('display','');
+  setTimeout(()=>{$('sunEye').setAttribute('display','');$('sunEyeHi').setAttribute('display','');$('sunWink').setAttribute('display','none')},700);
+  if(mode==='adv'){if(busy)return;if(mi<M.length){const m=M[mi];if(m.type==='tap'){m.target==='S'?win():miss();return}}}
+  const set=['s_2','s_3','s_hi'];play(set[idx.S++%3]);
+}
+async function setMode(m){
+  mode=m;const tk=++token;try{va.pause()}catch(e){}
+  document.querySelectorAll('.tabs [data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  theta=0;vel=0;glide=null;holding=false;ringOn=null;prevA=null;dayCount=0;$('status').textContent='Day 1';
+  if(m==='play'){busy=false;mi=M.length;showUI();$('again').hidden=true;render();play('n_play')}
+  else{mi=0;busy=true;drawStars(0);showUI();render();await play('n_start');await wait(300);if(tk===token)ask()}
+}
+
+/* turning: hold the button, or push the Earth. Only the real direction moves it. */
+function frame(t){
+  const dt=lastT===null?0:Math.min(.05,(t-lastT)/1000);lastT=t;let ch=false;
+  if(glide!==null){if(theta<glide){theta=Math.min(glide,theta+110*dt);ch=true}else glide=null}
+  else{
+    let w=0;if(holding&&canTurn())w+=SPEED;
+    if(vel>0&&!drag){w+=vel;vel*=Math.exp(-1.4*dt);if(vel<4)vel=0}
+    if(w){theta+=w*dt;ch=true}
+    if(mode==='play'&&vel>330&&t-wheeAt>6000){wheeAt=t;const k=Math.random()<.5?'A':'B';hop(k);play(KID[k].whee)}
+  }
+  if(ch)render();
+  requestAnimationFrame(frame);
+}
+const spin=$('spin');
+const hold=e=>{e.preventDefault();holding=true;spin.classList.add('on')};
+const rel=()=>{holding=false;spin.classList.remove('on')};
+spin.addEventListener('pointerdown',hold);
+['pointerup','pointerleave','pointercancel'].forEach(ev=>spin.addEventListener(ev,rel));
+spin.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')hold(e)});
+spin.addEventListener('keyup',rel);
+
+const svg=$('scene');
+function angAt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());return Math.atan2(-(q.y-CY),q.x-CX)*180/Math.PI}
+$('earth').addEventListener('pointerdown',e=>{
+  const k=e.target.closest('[data-kid]');
+  drag={ang:angAt(e),x:e.clientX,y:e.clientY,moved:false,kid:k?k.dataset.kid:null,t:performance.now()};vel=0;
+  try{svg.setPointerCapture(e.pointerId)}catch(x){}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>10)drag.moved=true;
+  if(!drag.moved)return;
+  const n=angAt(e),now=performance.now(),d=((n-drag.ang+540)%360)-180,dt=Math.max(.008,(now-drag.t)/1000);
+  if(canTurn()){if(d>0){theta+=d;vel=Math.min(720,.6*vel+.4*d/dt);render()}else vel=0}
+  drag.ang=n;drag.t=now;
+});
+const drop=()=>{if(!drag)return;const d=drag;drag=null;if(!d.moved&&d.kid)tapKid(d.kid);else if(performance.now()-d.t>120||!canTurn())vel=0};
+svg.addEventListener('pointerup',drop);svg.addEventListener('pointercancel',drop);
+
+function tapMoon(){const m=$('moon');m.classList.remove('hop');try{void m.getBBox()}catch(e){}m.classList.add('hop');if(mode==='adv'&&busy)return;play(['m_hi','m_2'][idx.M++%2])}
+$('moon').addEventListener('click',tapMoon);
+$('moon').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tapMoon()}});
+$('sun').addEventListener('click',tapSun);
+$('sun').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tapSun()}});
+$('choices').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||busy||mode!=='adv')return;b.dataset.a===M[mi].ans?win():miss()});
+$('replay').addEventListener('click',()=>{if(!busy&&mode==='adv'&&mi<M.length)play(M[mi].say)});
+$('again').addEventListener('click',()=>setMode('adv'));
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b&&started)setMode(b.dataset.m)});
+$('sound').addEventListener('click',e=>{soundOn=!soundOn;e.currentTarget.textContent='Sound: '+(soundOn?'on':'off');e.currentTarget.setAttribute('aria-pressed',soundOn);if(!soundOn)try{va.pause()}catch(x){}});
+$('full').addEventListener('click',()=>{try{const d=document;(d.fullscreenElement?d.exitFullscreen():d.documentElement.requestFullscreen()).catch(()=>{})}catch(x){}});
+$('start').addEventListener('click',()=>{
+  try{actx=new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(e){}
+  started=true;$('startScreen').hidden=true;setMode('adv');
+});
+
+drawStars(0);showUI();$('replay').hidden=true;$('spin').hidden=true;render();requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>

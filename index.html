@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Little Lessons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1433;--ink:#f3f6ff;--muted:#aab6dc;--card:#16224d;--line:#2a3a74;--sun:#ffcc33}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.5 "Baloo 2",system-ui,sans-serif}
+main{max-width:1100px;margin:0 auto;padding:clamp(24px,5vw,56px) max(4vw,16px)}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.05;margin:0 0 6px;font-weight:800}
+p.lead{color:var(--muted);margin:0 0 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:20px}
+a.card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;color:inherit;text-decoration:none;transition:transform .15s}
+a.card:hover,a.card:focus-visible{transform:translateY(-4px);outline:3px solid var(--sun);outline-offset:2px}
+a.card svg{display:block;width:100%;height:auto;background:radial-gradient(ellipse at 65% 50%,#15245a,#0b1433 75%)}
+.body{padding:14px 18px 18px}
+.body h2{margin:0;font-size:26px;font-weight:800}
+.body p{margin:2px 0 0;color:var(--muted)}
+.soon{border-style:dashed;opacity:.6;pointer-events:none}
+.soon .body h2{font-size:22px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Little Lessons</h1>
+  <p class="lead">Short, playful science lessons for young children. Tap a lesson to start.</p>
+  <div class="grid">
+    <a class="card" href="day-night/">
+      <svg viewBox="0 0 320 180" aria-hidden="true">
+        <g stroke="#ffcc33" stroke-width="5" stroke-linecap="round"><path d="M88 46v-14M88 134v14M42 90h-14M134 90h14M56 58l-10-10M120 122l10 10M56 122l-10 10M120 58l10-10"/></g>
+        <circle cx="88" cy="90" r="34" fill="#ffcc33"/><circle cx="78" cy="84" r="4" fill="#5a3b00"/><circle cx="98" cy="84" r="4" fill="#5a3b00"/><path d="M76 98q12 12 24 0" stroke="#5a3b00" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <circle cx="222" cy="90" r="56" fill="#2f86d6"/><path d="M196 62q18-14 36 0q8 16-12 22q-26 0-24-22zM228 104q18-4 22 12q-8 14-22 8q-6-10 0-20z" fill="#5cbf6a"/>
+        <path d="M222 34a56 56 0 0 1 0 112z" fill="#050a22" opacity=".75"/>
+      </svg>
+      <div class="body"><h2>Day and Night</h2><p>Why do we have day and night? Turn the Earth with Mimi and Sam.</p></div>
+    </a>
+    <div class="card soon"><div class="body"><h2>More lessons coming soon</h2></div></div>
+  </div>
+</main>
+</body>
+</html>
