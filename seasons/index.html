@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why Four Seasons?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a playful picture-book game for 5-year-olds, led by a teacher on a projector or tablet
+   IDEA: the lamp-and-leaning-ball model, seen from the side, with two animal friends on the top and bottom halves
+   PICTURE: a smiling Sun in the middle, a leaning Earth flying around it, Mimi the cat and Sam the bear, and their two windows
+   COLOUR and TYPE: space navy, sun yellow, ocean blue, land green, coral accent; Baloo 2 800/500
+   LAYOUT: one screen: tabs, scene with two sky windows, one big sentence, big buttons */
+:root{color-scheme:dark;--bg:#0b1433;--ink:#f3f6ff;--muted:#aab6dc;--sun:#ffcc33;--coral:#ff6b4a;--card:#16224d;--line:#2a3a74}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 "Baloo 2",system-ui,sans-serif;overflow-x:clip}
+.app{max-width:1400px;margin:0 auto;padding:10px max(3vw,12px) 24px;position:relative}
+header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+h1{font-weight:800;font-size:clamp(22px,3vw,34px);line-height:1.05;margin:0;flex:1 1 260px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+button{font:inherit;color:inherit;cursor:pointer;border-radius:999px;min-height:48px;padding:0 20px;background:var(--card);border:1px solid var(--line);font-weight:800}
+button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
+.tabs button[aria-pressed=true][data-m]{background:var(--sun);color:#0b1433;border-color:var(--sun)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,24%);gap:12px}
+.stage{position:relative;background:radial-gradient(ellipse at 65% 50%,#15245a 0%,#0b1433 70%);border-radius:24px;border:1px solid var(--line);overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:calc(100vh - 270px);min-height:240px;touch-action:none;user-select:none;-webkit-user-select:none}
+#earth{cursor:grab}
+[data-kid],#sun{cursor:pointer}#sun:focus:not(:focus-visible){outline:none}
+#sun{transform-box:fill-box;transform-origin:center}
+.status{position:absolute;top:12px;right:14px;font-weight:800;font-size:clamp(20px,3vw,32px);padding:2px 18px;border-radius:999px;background:#ffcc3340}
+.skies{display:grid;gap:12px;align-content:start}
+.sky{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:10px}
+.sky h2{font-size:19px;margin:0 0 4px;font-weight:800}
+.sky svg{display:block;width:100%;height:auto;border-radius:10px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:12px 16px;min-height:96px}
+#caption{flex:1 1 320px;font-weight:800;font-size:clamp(22px,2.8vw,34px);line-height:1.2;margin:0}
+.big{background:var(--coral);color:#fff;border:0;font-size:24px;min-height:68px;padding:0 34px;box-shadow:0 6px 0 #b8432c;user-select:none;-webkit-user-select:none}
+#spin{touch-action:none}
+#spin.on{transform:translateY(4px);box-shadow:0 2px 0 #b8432c;animation:none}
+@keyframes nudge{0%,55%,100%{transform:rotate(0) scale(1)}62%{transform:rotate(-2.5deg) scale(1.05)}70%{transform:rotate(2.5deg) scale(1.05)}78%{transform:rotate(-2deg) scale(1.03)}86%{transform:rotate(2deg) scale(1.03)}}
+#spin.nudge{animation:nudge 1.7s infinite}
+#choices{display:flex;gap:12px;flex-wrap:wrap}
+.ans{display:inline-flex;align-items:center;gap:10px;font-size:26px;min-height:76px;padding:0 26px;background:#22336e}
+.ans svg{width:48px;height:48px}
+#stars{display:flex;gap:2px;flex-wrap:wrap}
+#stars svg{width:28px;height:28px}
+[hidden]{display:none!important}
+@media(min-width:801px) and (min-height:521px){.bar.choosing #stars{display:none}}
+#startScreen{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#0b1433e6;border-radius:24px}
+#startScreen button{font-size:clamp(30px,5vw,54px);min-height:120px;padding:0 60px}
+details{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 18px}
+summary{font-weight:800;font-size:20px;cursor:pointer;min-height:44px;display:flex;align-items:center}
+details h3{font-size:18px;margin:14px 0 2px;font-weight:800;color:var(--sun)}
+details p,details li{max-width:70ch;font-weight:500}
+details ol,details ul{margin:4px 0;padding-left:22px}
+.kin{transform-box:fill-box;transform-origin:50% 100%}
+@keyframes hop{0%,100%{transform:translateY(0) scale(1)}30%{transform:translateY(-16px) scale(1.08,.94)}60%{transform:translateY(0) scale(.95,1.06)}}
+@keyframes wiggle{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pulse{0%,100%{stroke-opacity:.15}50%{stroke-opacity:1}}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+.hop{animation:hop .5s ease 2}
+#sun.shake{animation:wiggle .6s ease}
+#ring,#sunRing,#earthRing{animation:pulse 1.2s infinite}
+.conf{position:fixed;top:-20px;width:14px;height:14px;border-radius:3px;z-index:9;pointer-events:none;animation:fall 2.6s linear forwards}
+@media (prefers-reduced-motion:reduce){#spin.nudge,.hop,#sun.shake,#ring,#sunRing,#earthRing{animation:none}.conf{display:none}}
+@media(max-width:800px){
+.app{padding:6px 10px 16px}
+header{gap:6px;margin-bottom:6px}
+h1{display:none}
+.tabs{gap:6px;flex-wrap:nowrap;width:100%}
+.tabs button{min-height:40px;padding:0 12px;font-size:15px;flex:1 1 auto;white-space:nowrap}
+#full{display:none}
+.main{grid-template-columns:1fr;gap:8px}
+.stage{border-radius:18px}
+.stage svg{max-height:none;min-height:0}
+.skies{grid-template-columns:1fr 1fr;gap:8px}
+.sky{padding:6px 8px 8px;border-radius:14px}
+.sky h2{font-size:15px;margin:0 0 2px}
+.bar{position:sticky;bottom:6px;z-index:3;margin-top:8px;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom,0px));border-radius:18px;min-height:0;box-shadow:0 -6px 20px #0b1433}
+#caption{flex:1 1 100%;font-size:18px;line-height:1.25}
+#spin,#choices,#again{order:5}
+#stars{flex:1 1 auto}#stars svg{width:22px;height:22px}
+#replay{min-height:36px;padding:0 12px;font-size:14px}
+.big{flex:1 1 100%;min-height:54px;font-size:21px}
+#choices{flex:1 1 100%;gap:8px}
+.ans{flex:1 1 0;justify-content:center;min-height:64px;font-size:20px;padding:0 10px}
+.ans svg{width:38px;height:38px}
+#startScreen{border-radius:0}
+details{margin-top:14px}
+}
+@media(orientation:landscape) and (max-height:520px){
+.app{padding:4px 10px 10px}
+header{margin-bottom:4px}h1{display:none}
+.tabs button{min-height:36px;font-size:14px}#full{display:none}
+.main{grid-template-columns:minmax(0,1fr) 22%;gap:8px}
+.skies{grid-template-columns:1fr;gap:6px}
+.sky{padding:4px 6px 6px}.sky h2{font-size:13px;margin:0}
+.stage svg{max-height:calc(100dvh - 150px);min-height:150px}
+.bar{position:sticky;bottom:4px;z-index:3;margin-top:6px;padding:6px 12px;min-height:0;gap:8px;flex-wrap:nowrap}
+#caption{flex:1 1 auto}#spin,#choices,#again{order:0}
+#caption{font-size:17px;flex:1 1 auto}
+#stars svg{width:18px;height:18px}#stars{flex-wrap:nowrap}
+.big{min-height:48px;font-size:18px;padding:0 20px;flex:none;white-space:nowrap}
+#replay{display:none}
+.ans{min-height:48px;font-size:17px;padding:0 12px}.ans svg{width:30px;height:30px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>Why does Hong Kong have four seasons?</h1>
+    <div class="tabs">
+      <button data-m="adv" aria-pressed="true">Adventure</button>
+      <button data-m="play" aria-pressed="false">Free play</button>
+      <button id="sound" aria-pressed="true">Sound: on</button>
+      <button id="full">Full screen</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stage">
+      <div class="status" id="status" hidden>Spring</div>
+      <svg id="scene" viewBox="0 -95 1060 735" aria-label="The leaning Earth going around the Sun">
+        <defs>
+          <radialGradient id="sunGlow"><stop offset="0" stop-color="#ffe680" stop-opacity=".55"/><stop offset="1" stop-color="#ffcc33" stop-opacity="0"/></radialGradient>
+          <radialGradient id="warm"><stop offset="0" stop-color="#ffcc33" stop-opacity=".75"/><stop offset="1" stop-color="#ffcc33" stop-opacity="0"/></radialGradient>
+          <radialGradient id="cool"><stop offset="0" stop-color="#8fd3ff" stop-opacity=".7"/><stop offset="1" stop-color="#8fd3ff" stop-opacity="0"/></radialGradient>
+          <clipPath id="earthClip"><circle r="100"/></clipPath>
+        </defs>
+        <g id="stars0"></g>
+        <ellipse cx="530" cy="310" rx="310" ry="200" fill="none" stroke="#aab6dc" stroke-opacity=".45" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 20"/>
+        <g id="arrows" fill="#aab6dc" opacity=".8"></g>
+        <g font-weight="800" font-size="30" text-anchor="middle" pointer-events="none">
+          <text x="530" y="160" fill="#ff9ec0">Spring</text><text x="530" y="480" fill="#ffab5e">Autumn</text>
+          <text x="325" y="320" fill="#ffe680">Summer</text><text x="735" y="320" fill="#9fd4ff">Winter</text>
+        </g>
+        <g id="beam" stroke="#ffe680" stroke-opacity=".5" stroke-width="7" stroke-linecap="round" stroke-dasharray="2 22"><line y1="-24" y2="-24"/><line/><line y1="24" y2="24"/></g>
+        <circle id="sunRing" cx="530" cy="310" r="86" fill="none" stroke="#fff" stroke-width="8" display="none"/>
+        <g id="sun" tabindex="0" role="button" aria-label="The Sun">
+          <circle cx="530" cy="310" r="98" fill="url(#sunGlow)"/>
+          <g id="rays" stroke="#ffcc33" stroke-width="7" stroke-linecap="round"></g>
+          <g transform="translate(530 310) scale(.55) translate(-150 -290)">
+            <circle cx="150" cy="290" r="92" fill="#ffcc33" stroke="#ffb300" stroke-width="6"/>
+            <circle cx="120" cy="274" r="11" fill="#5a3b00"/><circle cx="124" cy="270" r="4" fill="#fff"/>
+            <circle id="sunEye" cx="180" cy="274" r="11" fill="#5a3b00"/><circle id="sunEyeHi" cx="184" cy="270" r="4" fill="#fff"/>
+            <path id="sunWink" d="M168 276 Q180 264 192 276" stroke="#5a3b00" stroke-width="7" fill="none" stroke-linecap="round" display="none"/>
+            <path d="M116 308 Q150 344 184 308" stroke="#5a3b00" stroke-width="7" fill="#ff8a5c" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="100" cy="302" rx="13" ry="9" fill="#ff8a5c" opacity=".6"/><ellipse cx="200" cy="302" rx="13" ry="9" fill="#ff8a5c" opacity=".6"/>
+          </g>
+        </g>
+        <g id="earth">
+          <circle r="140" fill="transparent"/>
+          <circle id="glowA" r="95" pointer-events="none"/><circle id="glowB" r="95" pointer-events="none"/>
+          <g id="wob">
+            <g transform="rotate(23.5)">
+              <line y1="-134" y2="134" stroke="#e8ecff" stroke-width="7" stroke-linecap="round"/>
+              <circle r="100" fill="#2f86d6"/>
+              <g clip-path="url(#earthClip)"><g fill="#5cbf6a" transform="scale(.526) translate(-640 -290)">
+                <path d="M560 150 q50 -40 110 -10 q40 30 10 70 q-30 40 -90 20 q-50 -20 -30 -80z"/>
+                <path d="M700 330 q60 -20 90 30 q10 50 -40 70 q-60 10 -70 -40 q-5 -40 20 -60z"/>
+                <path d="M500 300 q30 -30 60 0 q20 40 -10 70 q-40 20 -55 -20 q-5 -30 5 -50z"/>
+                <path d="M720 170 q40 0 50 30 q-10 30 -45 25 q-25 -20 -5 -55z"/>
+              </g></g>
+              <path d="M-100 0 Q0 34 100 0" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="3" stroke-dasharray="7 9"/>
+              <circle r="100" fill="none" stroke="#9cc8ff" stroke-opacity=".5" stroke-width="3"/>
+              <circle cy="-136" r="9" fill="#ff6b4a"/>
+            </g>
+            <circle id="ring" r="78" fill="none" stroke="#fff" stroke-width="6" display="none" pointer-events="none"/>
+            <g id="kidA" data-kid="A"></g><g id="kidB" data-kid="B"></g>
+          </g>
+        </g>
+        <circle id="earthRing" r="122" fill="none" stroke="#fff" stroke-width="7" display="none" pointer-events="none"/>
+        <g pointer-events="none" font-weight="800" font-size="28" text-anchor="middle">
+          <text id="labA" fill="#ffd36b">Mimi</text><text id="labB" fill="#9fe3b0">Sam</text>
+        </g>
+      </svg>
+    </div>
+    <div class="skies">
+      <div class="sky"><h2>Mimi in Hong Kong</h2><svg id="skyA" viewBox="0 0 320 140"></svg></div>
+      <div class="sky"><h2>Sam, far away</h2><svg id="skyB" viewBox="0 0 320 140"></svg></div>
+    </div>
+  </div>
+
+  <div class="bar">
+    <p id="caption" aria-live="polite">Tap Start to begin.</p>
+    <span id="stars"></span>
+    <button id="spin" class="big" aria-label="Hold to fly the Earth around the Sun" hidden>Hold to fly!</button>
+    <span id="choices" hidden></span>
+    <button id="replay" hidden>Hear it again</button>
+    <button id="again" class="big" hidden>Play again</button>
+  </div>
+  <div id="startScreen"><button class="big" id="start">Start</button></div>
+
+  <details>
+    <summary>Teacher notes</summary>
+    <h3>Learning goal</h3>
+    <p>Children can say: the Earth leans, and it goes around the Sun once a year. When our side leans toward the Sun it is summer and hot. When our side leans away it is winter and cool. Spring and autumn come in between.</p>
+    <h3>Key words</h3>
+    <p>Spring, summer, autumn, winter, season, year, lean, toward, away, hot, cool.</p>
+    <h3>Before the screen (5 minutes)</h3>
+    <ol><li>Put a lamp on a table in the middle: "This is the Sun."</li><li>Hold a ball with a sticker near the top: "This is the Earth. The sticker is Hong Kong." Tip the ball so it leans.</li><li>Walk the ball slowly around the lamp. Keep it leaning toward the same wall all the way. Ask: "Is our sticker leaning toward the lamp, or away?"</li></ol>
+    <h3>On the screen (10 minutes)</h3>
+    <ol><li><b>Adventure</b>: ten small jobs, each worth a star. Children tap Mimi, the Sun and the Earth, fly the Earth around the Sun from season to season, choose Mimi's hat, find the friend who is having summer, and answer one picture question. Let a different child do each job.</li><li><b>Free play</b>: push the Earth along its path, count the years, and tap the friends to hear about each season.</li></ol>
+    <h3>After the screen (5 minutes)</h3>
+    <p>Call out a season. Children mime it: fan yourself for summer, shiver and wrap a scarf for winter, smell a flower for spring, fly a kite for autumn. Then ask what they wear and eat in each season in Hong Kong.</p>
+    <h3>What is simplified</h3>
+    <ul><li>We look at the Earth's path from the side and a little above, so the round path looks like a squashed circle. The Earth stays about the same distance from the Sun all year. The seasons do not come from being nearer or farther.</li><li>Seen from above the North Pole, the Earth goes around the Sun anticlockwise, as it does here.</li><li>The Earth also spins once every day (see the Day and Night lesson). That spin is left out here so the lean is easy to see.</li><li>Mimi and Sam are drawn very big, near the top and the bottom, to show the two halves. Hong Kong is really closer to the middle line than to the top.</li><li>Each season is shown as one quarter of the trip, with the middle of summer and winter where the lean is strongest. Real weather runs a few weeks behind, and Hong Kong's summer feels longer than its winter.</li><li>Hong Kong's seasons are gentle: a warm, damp spring, a hot, rainy summer, a cool, dry autumn and a cool winter with no snow.</li><li>The sizes and distances are not real.</li></ul>
+    <p>The voices are computer-generated recordings that come with this page.</p>
+  </details>
+</div>
+
+<script>
+{
+const L={"n_start": "Hello, friends! Let's find out why Hong Kong has four seasons.", "n_m1": "First, let's say hello. Can you tap Mimi the cat?", "n_m2": "Now find the big, bright Sun. Give it a tap!", "n_m3": "Look at the Earth. It does not stand up straight. It leans! Tap the Earth.", "n_m3ok": "See? The Earth leans to one side, and it always leans the same way.", "n_m4": "It's spring in Hong Kong. Now fly the Earth around the Sun, until Mimi gets to summer.", "n_m4ok": "It's summer! Mimi's side leans toward the Sun. The Sun is high in the sky, so Hong Kong is hot.", "n_m5": "Phew, it's hot! Which hat should Mimi wear? A sun hat, or a woolly hat?", "n_m5ok": "Yes! A sun hat for hot, sunny days.", "n_m6": "Keep flying! Take Mimi to autumn.", "n_m6ok": "It's autumn! The air is cool and dry. A lovely day to fly a kite.", "n_m7": "Fly on again, all the way to winter.", "n_m7ok": "Brrr! It's winter. Now Mimi's side leans away from the Sun. The Sun is low in the sky, so Hong Kong is cool.", "n_m8": "Mimi is cold. But somebody is having summer right now! Tap the friend who feels hot.", "n_m8ok": "That's right! Sam lives on the bottom half. When it's winter for Mimi, it's summer for Sam.", "n_m9": "Here's a tricky one. In summer, does Mimi's side lean toward the Sun, or away?", "n_m9ok": "You got it! Leaning toward the Sun makes summer. Leaning away makes winter.", "n_m10": "Last one! Fly the Earth back to spring.", "n_m10ok": "Spring again! One whole trip around the Sun is one whole year.", "n_fin": "You did it! The Earth leans as it goes around the Sun, and that's why Hong Kong has four seasons. Great job, everyone!", "n_try": "Oops! Have another look.", "n_hint5": "Hmm. It's very hot today. Which hat keeps the Sun away?", "n_hint8": "Look for the friend in the sun hat.", "n_hint9": "Remember, summer is hot. Which way gets more sunshine?", "n_play": "Play time! Fly the Earth around the Sun, and tap your friends.", "n_year": "One more year!", "n_e1": "The Earth leans to one side.", "n_e2": "It always leans the same way.", "a_hi": "Hi! I'm Mimi! I live in Hong Kong, on the top half of the Earth.", "a_sp": "It's spring in Hong Kong!", "a_su": "It's summer in Hong Kong!", "a_au": "It's autumn in Hong Kong!", "a_wi": "It's winter in Hong Kong!", "a_sp1": "Spring! I can smell the flowers.", "a_sp2": "It's warm, and a little bit rainy.", "a_su1": "Phew! It's so hot!", "a_su2": "Ice cream, please!", "a_au1": "Autumn is cool and sunny.", "a_au2": "Let's fly a kite!", "a_wi1": "Brrr! Where is my scarf?", "a_wi2": "It's cold, but there's no snow in Hong Kong.", "a_whee": "Wheee! So fast!", "b_hi": "Hello! I'm Sam! I live far, far away, on the bottom half of the Earth.", "b_x": "My seasons are the other way around from Mimi's!", "b_sp1": "Spring! The bees are making honey.", "b_su1": "It's summer for me! Time for a swim.", "b_au1": "Autumn! I love the cool air.", "b_wi1": "Brrr! It's winter for me.", "b_whee": "Whoa! I'm getting dizzy!", "s_hi": "Hello! I'm the Sun! I stay in the middle, and the Earth goes around me.", "s_2": "I'm just as far away all year. It's the lean that makes the seasons!", "s_3": "Ha ha! That tickles!"};
+const CX=530,CY=310,RX=310,RY=200,R=100,SPEED=40,KA=45,KB=205,KS=1.4;
+const $=id=>document.getElementById(id);
+let theta=0,vel=0,glide=null,holding=false,lastT=null,soundOn=true,mode='adv',token=0;
+let mi=0,busy=true,ringOn=null,lastKey='n_start',started=false,dressed=false;
+let yearCount=0,prevS=null,wheeAt=0,idx={A:0,B:0,S:0,E:0},drag=null,actx=null,wobAt=-1e9;
+const va=new Audio();
+const NAMES=['Spring','Summer','Autumn','Winter'],CODE=['sp','su','au','wi'];
+
+const ICON={
+ hat:'<svg viewBox="0 0 48 48"><ellipse cx="24" cy="32" rx="22" ry="7" fill="#f2d16b"/><path d="M11 32Q12 10 24 10Q36 10 37 32Z" fill="#f7dd86"/><path d="M11.500 28Q24 33 36.500 28" stroke="#ff6b4a" stroke-width="4" fill="none"/></svg>',
+ wool:'<svg viewBox="0 0 48 48"><circle cx="24" cy="8" r="6" fill="#fff"/><path d="M8 36Q8 12 24 12Q40 12 40 36Z" fill="#ff6b4a"/><path d="M14 20l5 6 5-6 5 6 5-6" stroke="#fff" stroke-width="2.500" fill="none"/><rect x="5" y="32" width="38" height="10" rx="5" fill="#fff"/></svg>',
+ toward:'<svg viewBox="0 0 48 48"><circle cx="8" cy="24" r="7" fill="#ffcc33"/><g transform="rotate(-23.500 32 24)"><path d="M32 4v40" stroke="#e8ecff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="24" r="13" fill="#2f86d6"/><path d="M25 17q6-4 10 0q1 6-5 6q-6 0-5-6z" fill="#5cbf6a"/><circle cx="32" cy="4" r="3" fill="#ff6b4a"/></g></svg>',
+ away:'<svg viewBox="0 0 48 48"><circle cx="8" cy="24" r="7" fill="#ffcc33"/><g transform="rotate(23.500 32 24)"><path d="M32 4v40" stroke="#e8ecff" stroke-width="3" stroke-linecap="round"/><circle cx="32" cy="24" r="13" fill="#2f86d6"/><path d="M25 17q6-4 10 0q1 6-5 6q-6 0-5-6z" fill="#5cbf6a"/><circle cx="32" cy="4" r="3" fill="#ff6b4a"/></g></svg>'
+};
+const M=[
+ {say:'n_m1',type:'tap',target:'A',ok:'a_hi'},
+ {say:'n_m2',type:'tap',target:'S',ok:'s_hi'},
+ {say:'n_m3',type:'tap',target:'E',ok:'n_m3ok'},
+ {say:'n_m4',type:'turn',goal:1,ok:'n_m4ok',to:90},
+ {say:'n_m5',type:'choice',opts:[['hat','Sun hat'],['wool','Woolly hat']],ans:'hat',ok:'n_m5ok',hint:'n_hint5',dress:true},
+ {say:'n_m6',type:'turn',goal:2,ok:'n_m6ok',to:180},
+ {say:'n_m7',type:'turn',goal:3,ok:'n_m7ok',to:270},
+ {say:'n_m8',type:'tap',target:'B',ok:'n_m8ok',hint:'n_hint8',noRing:true},
+ {say:'n_m9',type:'choice',opts:[['toward','Toward'],['away','Away']],ans:'toward',ok:'n_m9ok',hint:'n_hint9'},
+ {say:'n_m10',type:'turn',goal:0,ok:'n_m10ok',to:0}
+];
+const KID={A:[['a_sp1','a_sp2'],['a_su1','a_su2'],['a_au1','a_au2'],['a_wi1','a_wi2']],B:[['b_sp1','b_hi'],['b_su1','b_x'],['b_au1','b_hi'],['b_wi1','b_x']],wheeA:'a_whee',wheeB:'b_whee'};
+
+/* sound */
+function tone(f,t0,d,type,g){try{if(!actx||!soundOn)return;const o=actx.createOscillator(),a=actx.createGain();o.type=type||'sine';o.frequency.value=f;a.gain.setValueAtTime(g||.18,actx.currentTime+t0);a.gain.exponentialRampToValueAtTime(.001,actx.currentTime+t0+d);o.connect(a).connect(actx.destination);o.start(actx.currentTime+t0);o.stop(actx.currentTime+t0+d)}catch(e){}}
+const sfx={ding(){tone(784,0,.18);tone(1047,.12,.18);tone(1319,.24,.35)},boop(){tone(220,0,.25,'triangle',.2)},pop(){tone(660,0,.12,'triangle')}};
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function play(key){
+  lastKey=key;$('caption').textContent=L[key];
+  const dur=L[key].length*65+700;
+  return new Promise(res=>{
+    let done=false;const fin=()=>{if(!done){done=true;res()}};
+    if(!soundOn){setTimeout(fin,dur);return}
+    try{va.onended=fin;va.onerror=()=>setTimeout(fin,dur);va.src='a/'+key+'.mp3';const p=va.play();if(p&&p.catch)p.catch(()=>setTimeout(fin,dur))}catch(e){setTimeout(fin,dur)}
+    setTimeout(fin,dur+6000);
+  });
+}
+
+/* drawing */
+let s='';for(let i=0;i<80;i++){const x=(i*137.5)%1060,y=(i*432.6)%735-95;s+=`<circle cx="${x.toFixed(0)}" cy="${y.toFixed(0)}" r="${(i%3)+1}" fill="#fff" opacity="${.2+(i%4)*.12}"/>`}
+$('stars0').innerHTML=s;
+let r='';for(let i=0;i<12;i++){const a=i*Math.PI/6;r+=`<line x1="${CX+Math.cos(a)*61}" y1="${CY+Math.sin(a)*61}" x2="${CX+Math.cos(a)*76}" y2="${CY+Math.sin(a)*76}"/>`}
+$('rays').innerHTML=r;
+$('arrows').innerHTML=[45,225].map(d=>{const a=d*Math.PI/180,x=CX+RX*Math.cos(a),y=CY-RY*Math.sin(a),dir=Math.atan2(-RY*Math.cos(a),-RX*Math.sin(a))*180/Math.PI;return `<path transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${dir.toFixed(1)})" d="M16 0L-12 -13V13Z"/>`}).join('');
+
+/* what the friends wear: sp flower, su sun hat, au leaf, wi woolly hat and scarf */
+function wear(c,isCat){
+  if(c==='su')return `<ellipse cx="0" cy="-69" rx="33" ry="7.5" fill="#f2d16b"/><path d="M-18 -70 Q-17 -95 0 -95 Q17 -95 18 -70Z" fill="#f7dd86"/><path d="M-18 -75 Q0 -70 18 -75" stroke="#ff6b4a" stroke-width="4.5" fill="none"/><path d="M30 -58 q-5 9 0 12 q5 -3 0 -12z" fill="#8fd3ff"/>`;
+  if(c==='wi')return `<path d="M-23 -64 Q-22 -95 0 -95 Q22 -95 23 -64 Q0 -73 -23 -64Z" fill="#ff6b4a"/><path d="M-23 -64 Q0 -74 23 -64" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="0" cy="-97" r="6.5" fill="#fff"/>${isCat?'<rect x="-15" y="-35" width="30" height="8" rx="4" fill="#ffcc33"/><rect x="5" y="-33" width="8" height="16" rx="3" fill="#ffcc33"/>':''}`;
+  if(c==='sp')return `<g transform="translate(17 -71)"><circle cx="0" cy="-5.500" r="4" fill="#ff9ec0"/><circle cx="5.200" cy="-1.700" r="4" fill="#ff9ec0"/><circle cx="3.200" cy="4.400" r="4" fill="#ff9ec0"/><circle cx="-3.200" cy="4.400" r="4" fill="#ff9ec0"/><circle cx="-5.200" cy="-1.700" r="4" fill="#ff9ec0"/><circle r="3" fill="#ffcc33"/></g>`;
+  if(c==='au')return `<path d="M8 -70 Q14 -86 28 -84 Q28 -70 14 -66 Z" fill="#ff8a3c"/><path d="M10 -68 L25 -82" stroke="#c85a1c" stroke-width="1.500"/>`;
+  return '';
+}
+const face=(nose,mouth)=>`<circle cx="-8" cy="-54" r="4.6" fill="#3a2a2a"/><circle cx="8" cy="-54" r="4.6" fill="#3a2a2a"/><circle cx="-6.4" cy="-55.8" r="1.7" fill="#fff"/><circle cx="9.600" cy="-55.800" r="1.700" fill="#fff"/>${mouth}
+ <ellipse cx="-15" cy="-46" rx="4.500" ry="2.800" fill="#ff8fa8" opacity=".85"/><ellipse cx="15" cy="-46" rx="4.500" ry="2.800" fill="#ff8fa8" opacity=".85"/>${nose}`;
+function cat(c){const f='#fff3e0',e='#f0c9a0';return `<g class="kin"><circle cx="0" cy="-45" r="58" fill="transparent"/>
+ <path d="M12 -8 Q34 -6 28 -30" stroke="${f}" stroke-width="7" fill="none" stroke-linecap="round"/>
+ <ellipse cx="-7" cy="-2" rx="7" ry="4.500" fill="${f}"/><ellipse cx="7" cy="-2" rx="7" ry="4.500" fill="${f}"/>
+ <path d="M-15 -4 Q-17 -34 0 -34 Q17 -34 15 -4Z" fill="#ff7aa2"/><circle cx="0" cy="-20" r="2.500" fill="#fff"/><circle cx="0" cy="-11" r="2.500" fill="#fff"/>
+ <ellipse cx="-17" cy="-24" rx="5" ry="8" fill="${f}" transform="rotate(35 -17 -24)"/><ellipse cx="17" cy="-24" rx="5" ry="8" fill="${f}" transform="rotate(-35 17 -24)"/>
+ <path d="M-21 -60 L-19 -84 L-3 -72Z" fill="${f}" stroke="${e}" stroke-width="1.500" stroke-linejoin="round"/><path d="M21 -60 L19 -84 L3 -72Z" fill="${f}" stroke="${e}" stroke-width="1.500" stroke-linejoin="round"/>
+ <path d="M-17 -66 L-16 -77 L-9 -71Z" fill="#ffb3c7"/><path d="M17 -66 L16 -77 L9 -71Z" fill="#ffb3c7"/>
+ <ellipse cx="0" cy="-52" rx="24" ry="21" fill="${f}" stroke="${e}" stroke-width="1.500"/>
+ <path d="M-24 -50 h-9 M-24 -45 l-8 3 M24 -50 h9 M24 -45 l8 3" stroke="${e}" stroke-width="1.600" stroke-linecap="round"/>
+ ${face('<path d="M-2.600 -49 h5.200 l-2.600 3z" fill="#ff7aa2"/>','<path d="M-6 -44 Q-3 -40 0 -44 Q3 -40 6 -44" stroke="#3a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>')}${wear(c,true)}</g>`}
+function bear(c){const f='#c98a5a',m='#f6dfc4';return `<g class="kin"><circle cx="0" cy="-45" r="58" fill="transparent"/>
+ <ellipse cx="-8" cy="-2" rx="8" ry="5" fill="${f}"/><ellipse cx="8" cy="-2" rx="8" ry="5" fill="${f}"/>
+ <ellipse cx="0" cy="-18" rx="17" ry="18" fill="${f}"/><ellipse cx="0" cy="-15" rx="10" ry="11" fill="${m}"/>
+ <ellipse cx="-19" cy="-24" rx="5.500" ry="9" fill="${f}" transform="rotate(35 -19 -24)"/><ellipse cx="19" cy="-24" rx="5.500" ry="9" fill="${f}" transform="rotate(-35 19 -24)"/>
+ <circle cx="-18" cy="-70" r="9" fill="${f}"/><circle cx="18" cy="-70" r="9" fill="${f}"/><circle cx="-18" cy="-70" r="4.500" fill="${m}"/><circle cx="18" cy="-70" r="4.500" fill="${m}"/>
+ <ellipse cx="0" cy="-52" rx="24" ry="21" fill="${f}"/>
+ <rect x="-15" y="-35" width="30" height="8" rx="4" fill="#4aa3ff"/><rect x="5" y="-33" width="8" height="16" rx="3" fill="#4aa3ff"/>
+ <ellipse cx="0" cy="-45" rx="10" ry="7.500" fill="${m}"/>
+ ${face('<ellipse cx="0" cy="-48.500" rx="3.800" ry="2.600" fill="#3a2a2a"/>','<path d="M-4 -43.500 Q0 -40 4 -43.500" stroke="#3a2a2a" stroke-width="2" fill="none" stroke-linecap="round"/>')}${wear(c,false)}</g>`}
+const rad=a=>a*Math.PI/180,norm=a=>((a%360)+360)%360;
+function place(id,ang){const a=rad(ang);$(id).setAttribute('transform',`translate(${(R-4)*Math.cos(a)} ${-(R-4)*Math.sin(a)}) rotate(${90-ang}) scale(${KS})`)}
+place('kidA',KA);place('kidB',KB);
+for(const[id,ang]of[['glowA',KA],['glowB',KB]]){const a=rad(ang);$(id).setAttribute('cx',(R+58)*Math.cos(a));$(id).setAttribute('cy',-(R+58)*Math.sin(a))}
+
+/* Where the Earth is on its path: alpha 90 = far side (spring), 180 = left (summer), 270 = near side (autumn), 0 = right (winter).
+   Anticlockwise on screen, which is the real direction seen from above the North Pole. The stick always leans to the right. */
+const alpha=()=>90+theta;
+const seasonA=()=>Math.floor(norm(alpha()-45)/90)%4;       /* 0 spring 1 summer 2 autumn 3 winter, for Mimi's half */
+const seasonOf=k=>k==='A'?seasonA():(seasonA()+2)%4;       /* Sam's half has the opposite season */
+const leanOf=k=>(k==='A'?-1:1)*Math.cos(rad(alpha()));     /* 1 = leaning fully toward the Sun, -1 = fully away */
+const mix=(c1,c2,t)=>{const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));const a=p(c1),b=p(c2);return'#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')};
+const GRASS=['#6cc070','#3f9f4a','#a3ad55','#84a07c'],CROWN=['#7fd08a','#2f8f3f','#8fa64a','#6f9a70'];
+function drawSky(id,k){
+  const se=seasonOf(k),le=leanOf(k),t=(le+1)/2;
+  let h=`<rect width="320" height="140" fill="${mix('#b9c9d9','#52b4ff',t)}"/>`;
+  const sy=62-le*36,sr=15+le*3;
+  if(se===1)for(let i=0;i<10;i++){const a=i*Math.PI/5;h+=`<line x1="${222+Math.cos(a)*(sr+5)}" y1="${sy+Math.sin(a)*(sr+5)}" x2="${222+Math.cos(a)*(sr+13)}" y2="${sy+Math.sin(a)*(sr+13)}" stroke="#ffcc33" stroke-width="3.500" stroke-linecap="round"/>`}
+  h+=`<circle cx="222" cy="${sy}" r="${sr}" fill="${mix('#ffe9a0','#ffcc33',t)}"/>`;
+  if(k==='A'){
+    h+=`<path d="M0 118 Q60 52 130 96 Q170 70 215 118Z" fill="${mix(CROWN[se],'#3a6a55',.35)}"/>`;
+    [[14,64,24,'#e9d3b0'],[42,44,22,'#cfd8ea'],[68,72,26,'#f2b8a0'],[98,56,20,'#d9e6c9']].forEach(b=>{h+=`<rect x="${b[0]}" y="${b[1]}" width="${b[2]}" height="${122-b[1]}" rx="2" fill="${b[3]}"/>`;for(let y=b[1]+6;y<108;y+=10)h+=`<rect x="${b[0]+4}" y="${y}" width="${b[2]-8}" height="4" fill="#5a6ea8" opacity=".55"/>`});
+  }else{
+    h+=`<path d="M0 118 Q70 80 150 108 T320 100 V140 H0Z" fill="${mix(CROWN[se],'#3a6a55',.35)}"/><rect x="40" y="92" width="38" height="30" fill="#e9d3b0"/><path d="M34 94 L59 74 L84 94Z" fill="#c8553d"/><rect x="54" y="104" width="11" height="18" fill="#7a4b2a"/>`;
+  }
+  h+=`<path d="M0 118 Q80 108 160 116 T320 112 V140 H0Z" fill="${GRASS[se]}"/>`;
+  h+=`<rect x="160" y="88" width="8" height="30" fill="#7a4b2a"/><circle cx="164" cy="76" r="${se===3?19:22}" fill="${CROWN[se]}"/>`;
+  if(se===0)[[152,68],[170,64],[176,80],[158,84],[164,72],[148,80]].forEach(p=>{h+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.500" fill="#ff9ec0"/>`});
+  if(se===2)[[152,68],[172,66],[176,82],[158,84]].forEach(p=>{h+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.500" fill="#ff8a3c"/>`});
+  if(se===0){h+=`<g fill="#fff" opacity=".95"><ellipse cx="118" cy="26" rx="24" ry="10"/><ellipse cx="134" cy="19" rx="15" ry="10"/><ellipse cx="104" cy="21" rx="12" ry="8"/></g><path d="M104 40l-4 9M118 42l-4 9M132 40l-4 9" stroke="#d8efff" stroke-width="2.500" stroke-linecap="round"/>`}
+  if(se===2){h+=`<path d="M268 26 L282 44 L268 66 L254 44Z" fill="#ff6b4a"/><path d="M268 26V66M254 44H282" stroke="#fff" stroke-width="1.500"/><path d="M268 66 Q258 84 274 98" stroke="#fff" stroke-width="1.500" fill="none"/>`}
+  if(se===3){h+=`<g fill="#fff" opacity=".8"><ellipse cx="110" cy="24" rx="26" ry="9"/><ellipse cx="130" cy="18" rx="14" ry="8"/></g><g fill="#fff" opacity=".7"><circle cx="258" cy="82" r="4"/><circle cx="251" cy="76" r="3"/><circle cx="246" cy="71" r="2"/></g>`}
+  h+=`<g transform="translate(284 134) scale(.92)">${(k==='A'?cat:bear)(dressed?CODE[se]:'')}</g>`;
+  h+=`<text x="10" y="24" font-size="19" font-weight="800" fill="#fff" stroke="#0b1433" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${NAMES[se]}</text>`;
+  $(id).innerHTML=h;
+}
+let worn={A:null,B:null};
+function dress(k){const c=dressed?CODE[seasonOf(k)]:'';if(worn[k]===c)return;worn[k]=c;const g=$('kid'+k),was=g.querySelector('.hop');g.innerHTML=(k==='A'?cat:bear)(c);if(was)g.querySelector('.kin').classList.add('hop')}
+function hop(k){const g=$('kid'+k).querySelector('.kin');g.classList.remove('hop');try{void g.getBBox()}catch(e){}g.classList.add('hop')}
+function drawStars(n){$('stars').innerHTML=M.map((_,i)=>`<svg viewBox="0 0 34 34"><path d="M17 2l4.6 9.6 10.4 1.4-7.6 7.3 1.9 10.4L17 25.6 7.7 30.7l1.9-10.4L2 13l10.4-1.4z" fill="${i<n?'#ffcc33':'#2a3a74'}"/></svg>`).join('')}
+function confetti(){const c=['#ffcc33','#ff6b4a','#5cbf6a','#6ec3ff','#ff7aa2'];for(let i=0;i<60;i++){const d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=c[i%5];d.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}}
+
+function render(){
+  const a=rad(alpha()),ex=CX+RX*Math.cos(a),ey=CY-RY*Math.sin(a),se=seasonA();
+  $('earth').setAttribute('transform',`translate(${ex} ${ey})`);
+  $('earthRing').setAttribute('cx',ex);$('earthRing').setAttribute('cy',ey);$('earthRing').setAttribute('display',ringOn==='E'?'':'none');
+  const dx=ex-CX,dy=ey-CY,d=Math.hypot(dx,dy);
+  $('beam').setAttribute('transform',`translate(${CX} ${CY}) rotate(${Math.atan2(dy,dx)*180/Math.PI})`);
+  $('beam').querySelectorAll('line').forEach(l=>{l.setAttribute('x1',90);l.setAttribute('x2',Math.max(97,d-R-22))});
+  for(const k of['A','B']){
+    const le=leanOf(k),g=$('glow'+k);g.setAttribute('fill',le>0?'url(#warm)':'url(#cool)');g.setAttribute('opacity',Math.min(1,Math.abs(le)*1.2).toFixed(2));
+    dress(k);
+    const ka=rad(k==='A'?KA:KB),lab=$('lab'+k),dist=R+140;
+    if(k==='A'){lab.setAttribute('x',Math.min(1012,ex+dist*Math.cos(ka)));lab.setAttribute('y',ey-dist*Math.sin(ka))}else{lab.setAttribute('x',ex-150);lab.setAttribute('y',ey-20)}
+  }
+  drawSky('skyA','A');drawSky('skyB','B');
+  const ring=$('ring');
+  if(ringOn==='A'||ringOn==='B'){const ka=rad(ringOn==='A'?KA:KB);ring.setAttribute('cx',(R+58)*Math.cos(ka));ring.setAttribute('cy',-(R+58)*Math.sin(ka));ring.setAttribute('display','')}else ring.setAttribute('display','none');
+  $('sunRing').setAttribute('display',ringOn==='S'?'':'none');
+  const yr=Math.floor(theta/360);
+  $('status').textContent=NAMES[se]+(mode==='play'?' · Year '+(yr+1):'');
+  if(mode==='adv'&&!busy&&mi<M.length){const m=M[mi];if(m.type==='turn'&&se===m.goal)win()}
+  if(mode==='play'&&started){
+    if(yr>yearCount){yearCount=yr;sfx.pop()}
+    if(prevS!==null&&se!==prevS&&Math.abs(vel)<200)play('a_'+CODE[se]);
+  }
+  prevS=se;
+}
+
+/* adventure */
+function canTurn(){if(!started)return false;if(mode==='play')return true;const m=M[mi];return !!m&&!busy&&m.type==='turn'}
+function showUI(){
+  const m=mode==='adv'?M[mi]:null,turn=mode==='play'||(m&&m.type==='turn');
+  $('spin').hidden=!turn;$('spin').classList.toggle('nudge',!!(mode==='adv'&&turn&&!busy));$('again').hidden=!(mode==='adv'&&mi>=M.length);
+  $('replay').hidden=!(m);$('stars').hidden=mode!=='adv';$('status').hidden=!started;
+  const c=$('choices');c.hidden=!(m&&m.type==='choice');document.querySelector('.bar').classList.toggle('choosing',!c.hidden);
+  if(m&&m.type==='choice')c.innerHTML=m.opts.map(o=>`<button class="ans" data-a="${o[0]}">${ICON[o[0]]}${o[1]}</button>`).join('');
+}
+function ask(){const m=M[mi];busy=false;ringOn=null;vel=0;showUI();render();play(m.say)}
+async function win(){
+  const m=M[mi],tk=token;busy=true;vel=0;holding=false;ringOn=null;sfx.ding();drawStars(mi+1);if(m.dress)dressed=true;showUI();
+  if(m.to!==undefined){let g=Math.floor(theta/360)*360+m.to;if(g<theta)g+=360;glide=g}
+  if(m.target==='E')wobAt=performance.now();
+  render();hop('A');hop('B');await play(m.ok);await wait(600);
+  if(tk!==token)return;
+  mi++;
+  if(mi<M.length)ask();else{showUI();confetti();sfx.ding();play('n_fin')}
+}
+function miss(){const m=M[mi];sfx.boop();if(m.type==='tap'&&!m.noRing)ringOn=m.target;render();play(m.hint||'n_try')}
+function tapAdv(k){ /* true when the adventure used the tap */
+  if(mode!=='adv')return false;
+  if(busy)return true;
+  if(mi<M.length){const m=M[mi];if(m.type==='tap'){m.target===k?win():miss();return true}}
+  return false;
+}
+function tapKid(k){hop(k);if(tapAdv(k))return;const set=KID[k][seasonOf(k)];play(set[idx[k]++%set.length])}
+function tapEarth(){
+  if(mode==='adv'&&(busy||(mi<M.length&&M[mi].type!=='tap')))return;
+  wobAt=performance.now();if(tapAdv('E'))return;play(['n_e1','n_e2'][idx.E++%2]);
+}
+function tapSun(){
+  const sun=$('sun');sun.classList.remove('shake');try{void sun.getBBox()}catch(e){}sun.classList.add('shake');
+  $('sunEye').setAttribute('display','none');$('sunEyeHi').setAttribute('display','none');$('sunWink').setAttribute('display','');
+  setTimeout(()=>{$('sunEye').setAttribute('display','');$('sunEyeHi').setAttribute('display','');$('sunWink').setAttribute('display','none')},700);
+  if(tapAdv('S'))return;
+  play(['s_2','s_3','s_hi'][idx.S++%3]);
+}
+async function setMode(m){
+  mode=m;const tk=++token;try{va.pause()}catch(e){}
+  document.querySelectorAll('.tabs [data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
+  theta=0;vel=0;glide=null;holding=false;ringOn=null;prevS=null;yearCount=0;dressed=m==='play';
+  if(m==='play'){busy=false;mi=M.length;showUI();$('again').hidden=true;render();play('n_play')}
+  else{mi=0;busy=true;drawStars(0);showUI();render();await play('n_start');await wait(300);if(tk===token)ask()}
+}
+
+/* flying: hold the button, or push the Earth along its path. Only the real direction moves it. */
+function frame(t){
+  const dt=lastT===null?0:Math.min(.05,(t-lastT)/1000);lastT=t;let ch=false;
+  if(glide!==null){if(theta<glide){theta=Math.min(glide,theta+70*dt);ch=true}else glide=null}
+  else{
+    let w=0;if(holding&&canTurn())w+=SPEED;
+    if(vel>0&&!drag){w+=vel;vel*=Math.exp(-1.4*dt);if(vel<4)vel=0}
+    if(w){theta+=w*dt;ch=true}
+    if(mode==='play'&&vel>330&&t-wheeAt>6000){wheeAt=t;const k=Math.random()<.5?'A':'B';hop(k);play(KID['whee'+k])}
+  }
+  const wt=(t-wobAt)/1000;
+  $('wob').setAttribute('transform',wt<1.6?`rotate(${(13*Math.sin(wt*9)*Math.exp(-wt*2.2)).toFixed(2)})`:'');
+  if(ch)render();
+  requestAnimationFrame(frame);
+}
+const spin=$('spin');
+const hold=e=>{e.preventDefault();holding=true;spin.classList.add('on')};
+const rel=()=>{holding=false;spin.classList.remove('on')};
+spin.addEventListener('pointerdown',hold);
+['pointerup','pointerleave','pointercancel'].forEach(ev=>spin.addEventListener(ev,rel));
+spin.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter')hold(e)});
+spin.addEventListener('keyup',rel);
+
+const svg=$('scene');
+function angAt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());return Math.atan2(-(q.y-CY)/RY,(q.x-CX)/RX)*180/Math.PI}
+$('earth').addEventListener('pointerdown',e=>{
+  const k=e.target.closest('[data-kid]');
+  drag={ang:angAt(e),x:e.clientX,y:e.clientY,moved:false,kid:k?k.dataset.kid:null,t:performance.now()};vel=0;
+  try{svg.setPointerCapture(e.pointerId)}catch(x){}
+});
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>10)drag.moved=true;
+  if(!drag.moved)return;
+  const n=angAt(e),now=performance.now(),d=((n-drag.ang+540)%360)-180,dt=Math.max(.008,(now-drag.t)/1000);
+  if(canTurn()&&glide===null){if(d>0){theta+=d;vel=Math.min(540,.6*vel+.4*d/dt);render()}else vel=0}
+  drag.ang=n;drag.t=now;
+});
+const drop=()=>{if(!drag)return;const d=drag;drag=null;if(!d.moved){d.kid?tapKid(d.kid):tapEarth()}else if(performance.now()-d.t>120||!canTurn())vel=0};
+svg.addEventListener('pointerup',drop);svg.addEventListener('pointercancel',drop);
+
+$('sun').addEventListener('click',tapSun);
+$('sun').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tapSun()}});
+$('choices').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||busy||mode!=='adv')return;b.dataset.a===M[mi].ans?win():miss()});
+$('replay').addEventListener('click',()=>{if(!busy&&mode==='adv'&&mi<M.length)play(M[mi].say)});
+$('again').addEventListener('click',()=>setMode('adv'));
+document.querySelector('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-m]');if(b&&started)setMode(b.dataset.m)});
+$('sound').addEventListener('click',e=>{soundOn=!soundOn;e.currentTarget.textContent='Sound: '+(soundOn?'on':'off');e.currentTarget.setAttribute('aria-pressed',soundOn);if(!soundOn)try{va.pause()}catch(x){}});
+$('full').addEventListener('click',()=>{try{const d=document;(d.fullscreenElement?d.exitFullscreen():d.documentElement.requestFullscreen()).catch(()=>{})}catch(x){}});
+$('start').addEventListener('click',()=>{
+  try{actx=new (window.AudioContext||window.webkitAudioContext)();actx.resume()}catch(e){}
+  started=true;$('startScreen').hidden=true;setMode('adv');
+});
+
+drawStars(0);showUI();$('replay').hidden=true;$('spin').hidden=true;render();requestAnimationFrame(frame);
+}
+</script>
+</body>
+</html>

@@ -20,7 +20,9 @@ children, parents, teachers or schools, no photos, no account names.
 | `tools/gen_voice.py` | lines → mp3 clips (Kokoro TTS; setup is in the file's docstring) |
 | `tools/shot.py` | Screenshots at desktop, phone-portrait and phone-landscape sizes |
 
-Lessons so far: `day-night/` (why we have day and night).
+Lessons so far: `day-night/` (why we have day and night), `seasons/` (why Hong Kong
+has four seasons). The lessons share the same cast (Mimi the cat lives in Hong Kong,
+Sam the bear lives on the far side, the Sun), the same voices and the same look.
 
 ## Changing a lesson
 
