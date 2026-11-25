@@ -1,0 +1,32 @@
+{
+ "n": {
+  "who": "Narrator",
+  "voice": "af_heart",
+  "speed": 0.92,
+  "lang": "en-us"
+ },
+ "a": {
+  "who": "Mimi the cat",
+  "voice": "af_sky",
+  "speed": 1.0,
+  "lang": "en-us"
+ },
+ "b": {
+  "who": "Sam the bear",
+  "voice": "am_puck",
+  "speed": 1.0,
+  "lang": "en-us"
+ },
+ "s": {
+  "who": "Sun",
+  "voice": "am_michael",
+  "speed": 0.95,
+  "lang": "en-us"
+ },
+ "m": {
+  "who": "Moon",
+  "voice": "bf_emma",
+  "speed": 0.95,
+  "lang": "en-gb"
+ }
+}
