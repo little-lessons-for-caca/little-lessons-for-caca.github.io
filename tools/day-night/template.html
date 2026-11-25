@@ -341,7 +341,7 @@ function ask(){
   const m=M[mi];busy=false;ringOn=null;vel=0;spinStart=theta;showUI();render();play(m.say);
 }
 async function win(){
-  const m=M[mi],tk=token;busy=true;vel=0;holding=false;ringOn=null;sfx.ding();drawStars(mi+1);hop('A');hop('B');showUI();
+  const m=M[mi],tk=token;busy=true;vel=0;holding=false;ringOn=null;sfx.ding();drawStars(mi+1);if(m.type!=='tap'){hop('A');hop('B')}showUI();
   if(m.to!==undefined){let g=Math.floor(theta/360)*360+m.to;if(g<theta)g+=360;glide=g}
   render();await play(m.ok);await wait(600);
   if(tk!==token)return;

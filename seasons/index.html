@@ -46,6 +46,12 @@ button:focus-visible{outline:3px solid var(--sun);outline-offset:3px}
 #stars{display:flex;gap:2px;flex-wrap:wrap}
 #stars svg{width:28px;height:28px}
 [hidden]{display:none!important}
+#hud{position:absolute;left:10px;bottom:8px;width:min(calc(100% - 20px),640px);pointer-events:none}
+#hud svg,#big svg{display:block;width:100%;height:auto;max-height:none;min-height:0}
+#big{position:absolute;inset:0;display:grid;place-items:center;background:#0b1433d9;padding:3%;pointer-events:none;border-radius:inherit}
+#big svg{max-width:880px;max-height:100%}
+@keyframes popin{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+.pop{transform-box:fill-box;transform-origin:center;animation:popin .35s ease}
 @media(min-width:801px) and (min-height:521px){#caption.long{font-size:clamp(19px,2.2vw,27px)}}
 @media(min-width:801px) and (min-height:521px){.bar.choosing #stars{display:none}}
 #startScreen{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:#0b1433e6;border-radius:24px}
@@ -167,21 +173,23 @@ header{margin-bottom:4px}h1{display:none}
               </g>
               <g fill="#fff" opacity=".8" transform="translate(36 0) scale(.75) translate(-640 -290)"><ellipse cx="600" cy="240" rx="26" ry="10"/><ellipse cx="618" cy="232" rx="16" ry="9"/><ellipse cx="700" cy="290" rx="22" ry="8"/><ellipse cx="580" cy="390" rx="24" ry="9"/></g>
             </g>
-            <circle cx="36" r="58" fill="none" stroke="#fff" stroke-opacity=".6" stroke-width="2.500" stroke-dasharray="1 7" stroke-linecap="round"/>
             <g id="shadeG" pointer-events="none"><rect x="-104" y="-104" width="116" height="208" fill="url(#shade)"/></g>
           </g>
           <circle r="100" fill="none" stroke="#9cc8ff" stroke-opacity=".5" stroke-width="3" pointer-events="none"/>
-          <g id="pole" data-pole="1"><circle cx="50" r="26" fill="transparent"/><path d="M36 0L60 -4" stroke="#e8ecff" stroke-width="6" stroke-linecap="round"/><circle cx="36" r="4.500" fill="#c9d2f0"/><circle cx="62" cy="-4.500" r="8" fill="#ff6b4a" stroke="#fff" stroke-width="1.500"/></g>
+          <g id="ringG" pointer-events="none" fill="none" stroke-linecap="round"></g>
           <circle id="poleRing" cx="56" cy="-3" r="24" fill="none" stroke="#fff" stroke-width="5" display="none" pointer-events="none"/>
           <circle id="ring" r="58" fill="none" stroke="#fff" stroke-width="5" display="none" pointer-events="none"/>
           <g id="kidB" data-kid="B"></g><g id="kidA" data-kid="A"></g>
           <g id="tokens" pointer-events="none"></g>
+          <g id="pole" data-pole="1"><circle cx="54" r="34" fill="transparent"/><path d="M36 0L60 -4" stroke="#e8ecff" stroke-width="6" stroke-linecap="round"/><circle cx="36" r="4.500" fill="#c9d2f0"/><circle cx="62" cy="-4.500" r="8" fill="#ff6b4a" stroke="#fff" stroke-width="1.500"/></g>
         </g>
       </svg>
+      <div id="hud" hidden><svg id="hudSvg" viewBox="0 0 640 60"></svg></div>
+      <div id="big" hidden><svg id="bigSvg" viewBox="0 0 700 372"></svg></div>
     </div>
     <div class="skies">
-      <div class="sky"><h2>Mimi in Hong Kong</h2><svg id="skyA" viewBox="0 0 320 140"></svg></div>
-      <div class="sky"><h2>Sunshine in one day</h2><svg id="chart" viewBox="0 0 320 140"></svg></div>
+      <div class="sky"><h2 id="skyT">Mimi in Hong Kong</h2><svg id="skyA" viewBox="0 0 320 140"></svg></div>
+      <div class="sky"><h2 id="chartT">Mimi's sunshine</h2><svg id="chart" viewBox="0 0 320 140"></svg></div>
     </div>
   </div>
 
@@ -205,46 +213,51 @@ header{margin-bottom:4px}h1{display:none}
     <h3>Before the screen (5 minutes)</h3>
     <ol><li>Put a lamp on a table in the middle: "This is the Sun."</li><li>Hold a ball with a sticker near the top: "This is the Earth. The sticker is Hong Kong." Tip the ball so it leans.</li><li>Stand on one side of the lamp with the top leaning toward it. Spin the ball: "Is our sticker in the light for a long time, or a short time?" Walk to the other side, still leaning toward the same wall, and spin again.</li></ol>
     <h3>On the screen (10 minutes)</h3>
-    <ol><li><b>Adventure</b>: ten small jobs, each worth a star. Children turn the Earth for one day and catch the little suns Mimi passes (eight in summer, four in winter), choose her hat, hold a button to fly to the next season, find the red ball that shows which way the Earth leans, and read the sunshine chart to answer a question. Let a different child do each job.</li><li><b>Free play</b>: turn the Earth to catch sunshine in any season, fly around the Sun, count the years, and tap the friends.</li></ol>
+    <ol><li><b>Adventure</b>: eleven small jobs, each worth a star. Children turn the Earth for one day and catch the little suns Mimi passes (eight in summer, four in winter), choose her hat, hold a button to fly to the next season, read the sunshine chart to answer a question, and find the red ball that shows which way the Earth leans. Then they meet Sam, who lives near the top of the Earth: no suns at all in his winter, and twelve in his summer. Let a different child do each job.</li><li><b>Free play</b>: tap Mimi or Sam to choose whose sunshine to count, turn the Earth to catch it in any season, fly around the Sun and count the years.</li></ol>
     <h3>After the screen (5 minutes)</h3>
     <p>Draw four rows on the board, one for each season, and let children stick on suns: eight, six, four, six. Ask which season has the most and the fewest, and what they wear and eat in each season in Hong Kong.</p>
     <h3>What is simplified</h3>
-    <ul><li>We look down from above the North Pole, as in the Day and Night lesson, so the Earth turns anticlockwise and also goes around the Sun anticlockwise. Both are the real directions.</li><li>The numbers of suns are made bigger so children can count the difference. In Hong Kong a summer day is really about thirteen and a half hours long and a winter day about ten and a half.</li><li>Long days are only half the story. In summer the Sun is also much higher in the sky, so its light is stronger. In Hong Kong this matters even more than the length of the day. The small picture of Mimi's home shows the Sun high in summer and low in winter.</li><li>The dotted ring is the path Mimi's home takes in one day. Mimi and Sam are drawn very big and farther from the middle line than Hong Kong really is.</li><li>The Earth turns about 365 times during one trip around the Sun. Here it turns only when a child turns it.</li><li>The Earth stays about the same distance from the Sun all year. The seasons do not come from being nearer or farther.</li><li>Each season is shown as one quarter of the trip, with the middle of summer and winter where the lean is strongest. Real weather runs a few weeks behind.</li><li>The sizes and distances are not real.</li></ul>
+    <ul><li>We look down from above the North Pole, as in the Day and Night lesson, so the Earth turns anticlockwise and also goes around the Sun anticlockwise. Both are the real directions.</li><li>The numbers of suns are made bigger so children can count the difference. In Hong Kong a summer day is really about thirteen and a half hours long and a winter day about ten and a half.</li><li>Long days are only half the story. In summer the Sun is also much higher in the sky, so its light is stronger. In Hong Kong this matters even more than the length of the day. The small picture of Mimi's home shows the Sun high in summer and low in winter.</li><li>The dotted ring is the path a friend's home takes in one day: the bright part is day and the rest is night. Mimi is drawn farther from the middle line than Hong Kong really is.</li><li>Sam lives in the far north, inside the Arctic Circle. There the Sun really does stay up all day in the middle of summer and stays down all day in the middle of winter. In the Day and Night lesson Sam simply lived "far, far away"; here we say where.</li><li>Places on the other half of the Earth, such as Australia, have summer when Hong Kong has winter. That half cannot be seen from above the North Pole, so it is not in this lesson.</li><li>The Earth turns about 365 times during one trip around the Sun. Here it turns only when a child turns it.</li><li>The Earth stays about the same distance from the Sun all year. The seasons do not come from being nearer or farther.</li><li>Each season is shown as one quarter of the trip, with the middle of summer and winter where the lean is strongest. Real weather runs a few weeks behind.</li><li>The sizes and distances are not real.</li></ul>
     <p>The voices are computer-generated recordings that come with this page.</p>
   </details>
 </div>
 
 <script>
 {
-const L={"n_start": "Hello, friends! Let's find out why Hong Kong has four seasons.", "n_m1": "First, let's say hello. Can you tap Mimi the cat?", "n_m2": "Why is summer so hot? Let's count the sunshine! Turn the Earth, and help Mimi catch every little sun.", "n_m2ok": "Eight suns! In summer, Mimi's day is long. She gets lots and lots of sunshine. That's why it's hot!", "n_m3": "Which hat should Mimi wear on a hot summer day? A sun hat, or a woolly hat?", "n_m3ok": "Yes! A sun hat for hot, sunny days.", "n_m4": "Now let's go on a trip around the Sun! Hold the button, and fly to autumn.", "n_m4ok": "It's autumn! Six suns this time. A little less sunshine, so the air is cool. A lovely day to fly a kite.", "n_m5": "Keep flying, all the way to winter.", "n_m5ok": "Brrr! It's winter in Hong Kong.", "n_m6": "How much sunshine does Mimi get now? Turn the Earth one whole turn, and catch the suns.", "n_m6ok": "Only four suns! In winter, Mimi's day is short, and her night is long. Just a little sunshine. That's why it's cold.", "n_m7": "But why? Look for the red ball on top of the Earth. Tap it!", "n_m7ok": "That's the top of the Earth. See? The Earth leans over, and it always leans the same way. In summer, the top leans toward the Sun. In winter, it leans away.", "n_m8": "Here's a tricky one. When does Mimi get more sunshine? In summer, or in winter?", "n_m8ok": "You got it! Lots of sunshine in summer. Just a little in winter.", "n_m9": "Let's fly on to spring.", "n_m9ok": "It's spring! Six suns again. The days are getting longer. Flowers come out, and there's a little rain.", "n_m10": "Last one! Fly back to summer.", "n_m10ok": "Summer again! One whole trip around the Sun is one whole year.", "n_fin": "You did it! The Earth leans as it goes around the Sun. So Hong Kong gets more sunshine, then less sunshine. And that's why we have four seasons. Great job, everyone!", "n_try": "Oops! Have another look.", "n_hint3": "Hmm. It's very hot today. Which hat keeps the Sun away?", "n_hint7": "Look for the little red ball, on top of the Earth.", "n_hint8": "Look at the sunshine chart. Which one has more suns?", "n_play": "Play time! Turn the Earth to catch the sunshine, or fly around the Sun.", "a_hi": "Hi! I'm Mimi! I live in Hong Kong. Phew! It's summer, and I'm so hot!", "a_sp": "It's spring in Hong Kong!", "a_su": "It's summer in Hong Kong!", "a_au": "It's autumn in Hong Kong!", "a_wi": "It's winter in Hong Kong!", "a_sp1": "Spring! I can smell the flowers.", "a_sp2": "It's warm, and a little bit rainy.", "a_su1": "Phew! It's so hot!", "a_su2": "Ice cream, please!", "a_au1": "Autumn is cool and sunny.", "a_au2": "Let's fly a kite!", "a_wi1": "Brrr! Where is my scarf?", "a_wi2": "It's cold, but there's no snow in Hong Kong.", "a_s1": "Shh. I'm sleeping.", "a_s2": "Five more minutes, please.", "a_whee": "Wheee! So fast!", "b_hi": "Hello! I'm Sam! I live far, far away.", "b_sp1": "Spring! The bees are making honey.", "b_su1": "It's summer! Time for a swim.", "b_au1": "Autumn! I love the cool air.", "b_wi1": "Brrr! Winter is a good time for a long sleep.", "b_s1": "Zzz. I'm dreaming of honey.", "b_s2": "Shh. Bears need their sleep.", "b_whee": "Whoa! I'm getting dizzy!", "s_hi": "Hello! I'm the Sun! I stay in the middle, and the Earth goes around me.", "s_2": "I'm just as far away all year. It's the lean that makes the seasons!", "s_3": "Ha ha! That tickles!"};
+const L={"n_start": "Hello, friends! Let's find out why Hong Kong has four seasons.", "n_m1": "First, let's say hello. Can you tap Mimi the cat?", "n_m2": "Why is summer so hot? Let's count the sunshine! Turn the Earth, and help Mimi catch every little sun.", "n_m2ok": "Eight suns! In summer, Mimi's day is long. She gets lots and lots of sunshine. That's why it's hot!", "n_m3": "Which hat should Mimi wear on a hot summer day? A sun hat, or a woolly hat?", "n_m3ok": "Yes! A sun hat for hot, sunny days.", "n_m4": "Now let's go on a trip around the Sun! Hold the button, and fly to autumn.", "n_m4ok": "It's autumn! Six suns this time. A little less sunshine, so the air is cool. A lovely day to fly a kite.", "n_m5": "Keep flying, all the way to winter.", "n_m5ok": "Brrr! It's winter in Hong Kong.", "n_m6": "How much sunshine does Mimi get now? Turn the Earth one whole turn, and catch the suns.", "n_m6ok": "Only four suns! In winter, Mimi's day is short, and her night is long. Just a little sunshine. That's why it's cold.", "n_m7": "Here's a tricky one. Look at the chart. When does Mimi get more sunshine? In summer, or in winter?", "n_m7ok": "You got it! Lots of sunshine in summer. Just a little in winter.", "n_m8": "But why? Look for the red ball on top of the Earth. Tap it!", "n_m8ok": "That's the top of the Earth. See? The Earth leans over, and it always leans the same way. In summer, the top leans toward the Sun. In winter, it leans away.", "n_m9": "Now, who lives near the top of the Earth? Find Sam the bear, and tap him!", "n_m9ok": "Watch Sam go around. No suns at all! In Sam's winter, the Sun never comes up. It's dark all day long.", "n_m10": "Let's fly on to spring.", "n_m10ok": "It's spring! Six suns again. The days are getting longer. Flowers come out, and there's a little rain.", "n_m11": "Last one! Fly back to summer.", "n_m11b": "And look at Sam! Twelve suns! In Sam's summer, the Sun never goes to bed.", "n_m11ok": "Summer again! One whole trip around the Sun is one whole year.", "n_fin": "You did it! The Earth leans as it goes around the Sun. So we get more sunshine, then less sunshine. That's why we have four seasons, and why they are different in different places. Great job, everyone!", "n_try": "Oops! Have another look.", "n_hint3": "Hmm. It's very hot today. Which hat keeps the Sun away?", "n_hint7": "Look at the chart. Which one has more suns?", "n_hint8": "Look for the little red ball, on top of the Earth.", "n_play": "Play time! Turn the Earth to catch the sunshine, or fly around the Sun. Tap Mimi or Sam to count their suns.", "a_hi": "Hi! I'm Mimi! I live in Hong Kong. Phew! It's summer, and I'm so hot!", "a_sp": "It's spring in Hong Kong!", "a_su": "It's summer in Hong Kong!", "a_au": "It's autumn in Hong Kong!", "a_wi": "It's winter in Hong Kong!", "a_sp1": "Spring! I can smell the flowers.", "a_sp2": "It's warm, and a little bit rainy.", "a_su1": "Phew! It's so hot!", "a_su2": "Ice cream, please!", "a_au1": "Autumn is cool and sunny.", "a_au2": "Let's fly a kite!", "a_wi1": "Brrr! Where is my scarf?", "a_wi2": "It's cold, but there's no snow in Hong Kong.", "a_s1": "Shh. I'm sleeping.", "a_s2": "Five more minutes, please.", "a_whee": "Wheee! So fast!", "b_hi": "Hello! I'm Sam! I live near the top of the Earth, where it's icy cold.", "b_sp1": "Spring! The ice is melting.", "b_su1": "It's summer! The Sun is up all day, and all night.", "b_au1": "Autumn! The nights are getting long.", "b_wi1": "Brrr! Winter is a good time for a long sleep.", "b_s1": "Zzz. I'm dreaming of honey.", "b_s2": "Shh. Bears need their sleep.", "b_whee": "Whoa! I'm getting dizzy!", "s_hi": "Hello! I'm the Sun! I stay in the middle, and the Earth goes around me.", "s_2": "I'm just as far away all year. It's the lean that makes the seasons!", "s_3": "Ha ha! That tickles!", "n_hint9": "Sam is the sleepy bear, near the red ball."};
 /* World: the Sun is at 0,0. We look down from above the North Pole, as in Day and Night.
    The Earth's top (the pole) is drawn PX to the right of the middle of the disc: that is the lean, and it never changes.
    Mimi's home goes around the pole once a day on a ring of radius LR. */
-const D=300,R=100,PX=36,LR=58,ASP=1060/735,FLY=40,TURN=60,A0=20;
+const D=300,R=100,PX=36,ASP=1060/735,FLY=40,TURN=60,A0=20;
+const RING={A:{cx:29,r:58,s:1,tr:6.5},B:{cx:35,r:26,s:.7,tr:4.5}};   /* Mimi: Hong Kong (drawn farther north). Sam: the far north */
 const $=id=>document.getElementById(id);
 let theta=0,orb=0,vel=0,glide=null,holdSpin=false,holdFly=false,lastT=null,soundOn=true,mode='adv',token=0;
 let mi=0,busy=true,ringOn=null,lastKey='n_start',started=false,dressed=false,wideHold=false;
 let zoom=0,prevS=null,wheeAt=0,idx={A:0,B:0,S:0},drag=null,actx=null;
-let toks=[],tokOn=false,armAt=0,autoLeft=0,pendAuto=false,best=[0,0,0,0],dirty=true;
+let toks=[],tokOn=false,armAt=0,autoLeft=0,pendAuto=null,who='A',bigOn=false,popAt=-1,dirty=true;
+let best={A:[0,0,0,0],B:[0,0,0,0]},done={A:[0,0,0,0],B:[0,0,0,0]};
 const va=new Audio();
 const NAMES=['Summer','Autumn','Winter','Spring'],CODE=['su','au','wi','sp'],TINT=['#ffe680','#ffab5e','#9fd4ff','#ff9ec0'];
 
 const ICON={
  hat:'<svg viewBox="0 0 48 48"><ellipse cx="24" cy="32" rx="22" ry="7" fill="#f2d16b"/><path d="M11 32Q12 10 24 10Q36 10 37 32Z" fill="#f7dd86"/><path d="M11.500 28Q24 33 36.500 28" stroke="#ff6b4a" stroke-width="4" fill="none"/></svg>',
  wool:'<svg viewBox="0 0 48 48"><circle cx="24" cy="8" r="6" fill="#fff"/><path d="M8 36Q8 12 24 12Q40 12 40 36Z" fill="#ff6b4a"/><path d="M14 20l5 6 5-6 5 6 5-6" stroke="#fff" stroke-width="2.500" fill="none"/><rect x="5" y="32" width="38" height="10" rx="5" fill="#fff"/></svg>',
+ kite:'<svg viewBox="0 0 48 48"><path d="M24 4L38 22L24 40L10 22Z" fill="#ff6b4a"/><path d="M24 4V40M10 22H38" stroke="#fff" stroke-width="2"/><path d="M24 40q-6 4 0 7" stroke="#fff" stroke-width="2" fill="none"/></svg>',
+ flower:'<svg viewBox="0 0 48 48"><g fill="#ff9ec0"><circle cx="24" cy="11" r="8"/><circle cx="36.400" cy="20" r="8"/><circle cx="31.600" cy="34.500" r="8"/><circle cx="16.400" cy="34.500" r="8"/><circle cx="11.600" cy="20" r="8"/></g><circle cx="24" cy="24" r="7" fill="#ffcc33"/></svg>',
  sunny:'<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="13" fill="#ffcc33"/><g stroke="#ffcc33" stroke-width="4" stroke-linecap="round"><path d="M24 2v6M24 40v6M2 24h6M40 24h6M8 8l5 5M35 35l5 5M8 40l5-5M35 13l5-5"/></g></svg>'
 };
 const M=[
- {say:'n_m1',type:'tap',target:'A',ok:'a_hi'},
- {say:'n_m2',type:'catch',ok:'n_m2ok'},
- {say:'n_m3',type:'choice',opts:[['hat','Sun hat'],['wool','Woolly hat']],ans:'hat',ok:'n_m3ok',hint:'n_hint3',dress:true},
- {say:'n_m4',type:'fly',goal:1,ok:'n_m4ok',to:90,auto:true},
- {say:'n_m5',type:'fly',goal:2,ok:'n_m5ok',to:180},
- {say:'n_m6',type:'catch',ok:'n_m6ok'},
- {say:'n_m7',type:'tap',target:'P',ok:'n_m7ok',hint:'n_hint7',wide:true},
- {say:'n_m8',type:'choice',opts:[['sunny','Summer'],['wool','Winter']],ans:'sunny',ok:'n_m8ok',hint:'n_hint8'},
- {say:'n_m9',type:'fly',goal:3,ok:'n_m9ok',to:270,auto:true},
- {say:'n_m10',type:'fly',goal:0,ok:'n_m10ok',to:0}
+ {say:'n_m1',type:'tap',target:'A',ok:['a_hi']},
+ {say:'n_m2',type:'catch',ok:['n_m2ok']},
+ {say:'n_m3',type:'choice',opts:[['hat','Sun hat'],['wool','Woolly hat']],ans:'hat',ok:['n_m3ok'],hint:'n_hint3',dress:true},
+ {say:'n_m4',type:'fly',goal:1,ok:['n_m4ok'],to:90,auto:['A',0]},
+ {say:'n_m5',type:'fly',goal:2,ok:['n_m5ok'],to:180},
+ {say:'n_m6',type:'catch',ok:['n_m6ok']},
+ {say:'n_m7',type:'choice',opts:[['sunny','Summer'],['wool','Winter']],ans:'sunny',ok:['n_m7ok'],hint:'n_hint7',chart:true},
+ {say:'n_m8',type:'tap',target:'P',ok:['n_m8ok'],hint:'n_hint8',wide:true},
+ {say:'n_m9',type:'tap',target:'B',ok:['b_hi','n_m9ok'],hint:'n_hint9',auto:['B',1]},
+ {say:'n_m10',type:'fly',goal:3,ok:['n_m10ok'],to:270,auto:['A',0]},
+ {say:'n_m11',type:'fly',goal:0,ok:['n_m11ok','n_m11b'],to:0,auto:['B',1]}
 ];
 const KID={A:[['a_su1','a_su2'],['a_au1','a_au2'],['a_wi1','a_wi2'],['a_sp1','a_sp2']],B:[['b_su1','b_hi'],['b_au1','b_hi'],['b_wi1','b_hi'],['b_sp1','b_hi']],zA:['a_s1','a_s2'],zB:['b_s1','b_s2'],wheeA:'a_whee',wheeB:'b_whee'};
 
@@ -312,14 +325,33 @@ function bear(c,z){const f='#c98a5a',m='#f6dfc4';return `<g class="kin"><circle 
 const alpha=()=>180+orb;
 const season=()=>Math.floor(norm(orb+45)/90)%4;                 /* 0 summer 1 autumn 2 winter 3 spring */
 const sunDir=()=>{const a=rad(alpha());return[-Math.cos(a),-Math.sin(a)]};   /* from the Earth toward the Sun, y up */
-const phi=k=>A0+theta+(k==='B'?180:0);                          /* where a friend is on the day ring */
-const ringPt=p=>[PX+LR*Math.cos(rad(p)),LR*Math.sin(rad(p))];   /* y up, from the middle of the Earth */
-const lit=p=>{const q=ringPt(p),d=sunDir();return q[0]*d[0]+q[1]*d[1]>3};
-const asleep=k=>!lit(phi(k));
+const phi=k=>A0+theta+(k==='B'?180:0);                          /* where a friend is on their day ring */
+const ringPt=(k,p)=>[RING[k].cx+RING[k].r*Math.cos(rad(p)),RING[k].r*Math.sin(rad(p))];   /* y up, from the middle of the Earth */
+const lit=(k,p)=>{const q=ringPt(k,p),d=sunDir();return q[0]*d[0]+q[1]*d[1]>3};
+const asleep=k=>!lit(k,phi(k));
 const mix=(c1,c2,t)=>{const p=c=>[1,3,5].map(i=>parseInt(c.slice(i,i+2),16));const a=p(c1),b=p(c2);return'#'+a.map((v,i)=>Math.round(v+(b[i]-v)*t).toString(16).padStart(2,'0')).join('')};
 const GRASS=['#3f9f4a','#a3ad55','#84a07c','#6cc070'],CROWN=['#2f8f3f','#8fa64a','#6f9a70','#7fd08a'];
-const sunSvg=(x,y,r,on)=>on?`<g transform="translate(${x} ${y})"><circle r="${r}" fill="#ffcc33"/><g stroke="#ffcc33" stroke-width="${(r*.32).toFixed(1)}" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(d=>{const a=rad(d);return `<path d="M${(Math.cos(a)*r*1.3).toFixed(1)} ${(Math.sin(a)*r*1.3).toFixed(1)}L${(Math.cos(a)*r*1.75).toFixed(1)} ${(Math.sin(a)*r*1.75).toFixed(1)}"/>`}).join('')}</g></g>`:`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width="1.500"/>`;
+const sunSvg=(x,y,r,on)=>on?`<g transform="translate(${x} ${y})"><circle r="${r}" fill="#ffcc33"/><g stroke="#ffcc33" stroke-width="${(r*.32).toFixed(1)}" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(d=>{const a=rad(d);return `<path d="M${(Math.cos(a)*r*1.3).toFixed(1)} ${(Math.sin(a)*r*1.3).toFixed(1)}L${(Math.cos(a)*r*1.75).toFixed(1)} ${(Math.sin(a)*r*1.75).toFixed(1)}"/>`}).join('')}</g></g>`:`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#ffcc33" stroke-opacity=".8" stroke-width="${(r*.22).toFixed(1)}" stroke-dasharray="${(r*.5).toFixed(1)} ${(r*.4).toFixed(1)}"/>`;
+const moonSvg=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#0a1030" stroke="#4a5a98" stroke-width="${(r*.14).toFixed(1)}"/><path transform="translate(${x} ${y}) scale(${(r/10).toFixed(2)})" d="M2 -6a6.500 6.500 0 1 0 4.500 9.500a5.200 5.200 0 0 1 -4.500 -9.500z" fill="#aab6dc"/>`;
+const slot=(x,y,r,st)=>st===2?sunSvg(x,y,r*.62,true):st===1?sunSvg(x,y,r*.8,false):st===0?moonSvg(x,y,r*.85):`<circle cx="${x}" cy="${y}" r="${(r*.3).toFixed(1)}" fill="#4a5a98"/>`;
+const inner=(ic,x,y,w)=>ic.replace('<svg ',`<svg x="${x}" y="${y}" width="${w}" height="${w}" `);
+function drawNorth(){
+  const se=season(),le=Math.cos(rad(orb)),t=(le+1)/2;
+  let h=`<rect width="320" height="140" fill="${t>.5?mix('#ffb37a','#7cc8ff',(t-.5)*2):mix('#0d1640','#ffb37a',t*2)}"/>`;
+  const night=Math.max(0,1-t*2.4);
+  for(let i=0;i<16;i++)h+=`<circle cx="${(i*53)%310+5}" cy="${(i*29)%74+8}" r="1.800" fill="#fff" opacity="${night.toFixed(2)}"/>`;
+  if(night>.3)h+=`<path d="M10 58 Q80 8 160 40 T312 22" stroke="#7dffb0" stroke-width="12" fill="none" opacity="${(night*.55).toFixed(2)}" stroke-linecap="round"/><path d="M30 66 Q110 26 190 50 T312 40" stroke="#9fd4ff" stroke-width="7" fill="none" opacity="${(night*.4).toFixed(2)}" stroke-linecap="round"/>`;
+  const sy=118-t*62;h+=`<circle cx="200" cy="${sy}" r="16" fill="#ffcc33"/>`;
+  h+=`<path d="M0 112 Q60 96 130 108 T320 100 V140 H0Z" fill="${mix('#9fb4d8','#f4f8ff',t)}"/>`;
+  [[36,104,.9],[70,110,1.15],[150,108,1]].forEach(q=>{h+=`<g transform="translate(${q[0]} ${q[1]}) scale(${q[2]})"><rect x="-3" y="0" width="6" height="12" fill="#7a4b2a"/><path d="M0 -44L16 -14H-16Z M0 -28L20 2H-20Z" fill="#2f7f4f"/><path d="M0 -44L7 -31H-7Z" fill="#fff"/></g>`});
+  h+=`<rect x="92" y="94" width="36" height="26" fill="#b9793f"/><path d="M86 96 L110 76 L134 96Z" fill="#fff"/><rect x="105" y="104" width="10" height="16" fill="#5a3b1c"/><rect x="95" y="100" width="7" height="7" fill="${t<.4?'#ffe680':'#cfe6ff'}"/>`;
+  h+=`<g transform="translate(284 134) scale(.92)">${bear(dressed&&se!==0?'wi':'',se===2)}</g>`;
+  h+=`<text x="10" y="24" font-size="19" font-weight="800" fill="#fff" stroke="#0b1433" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${NAMES[se]}</text>`;
+  $('skyA').innerHTML=h;
+}
 function drawSky(){
+  $('skyT').textContent=who==='A'?'Mimi in Hong Kong':'Sam in the far north';
+  if(who==='B')return drawNorth();
   const se=season(),le=Math.cos(rad(orb)),t=(le+1)/2;
   let h=`<rect width="320" height="140" fill="${mix('#b9c9d9','#52b4ff',t)}"/>`;
   const sy=62-le*36,sr=15+le*3;
@@ -338,39 +370,74 @@ function drawSky(){
   h+=`<text x="10" y="24" font-size="19" font-weight="800" fill="#fff" stroke="#0b1433" stroke-width="4" paint-order="stroke" stroke-linejoin="round">${NAMES[se]}</text>`;
   $('skyA').innerHTML=h;
 }
-/* the sunshine chart: one row for each season, one little sun for each sun Mimi caught in a day */
+/* the sunshine charts: one row for each season, twelve places for the twelve parts of a day.
+   2 = a sun that was caught, 1 = a sun still waiting, 0 = night, -1 = not counted yet */
+const SICON=['hat','kite','wool','flower'];
+function rowState(k,i){const n=best[k][i];if(!done[k][i]&&!(i===season()&&k===who&&toks.length))return Array(12).fill(-1);
+  if(i===season()&&k===who&&toks.length){const l=toks.filter(t=>t.lit).length;return Array.from({length:12},(_,j)=>j<n?2:j<l?1:0)}
+  return Array.from({length:12},(_,j)=>j<n?2:0)}
 function drawChart(){
-  const se=season();let h='';
-  for(let i=0;i<4;i++){const y=5+i*33;
-    h+=`<rect x="2" y="${y}" width="316" height="30" rx="9" fill="${i===se?'#2a3a74':'#1b2957'}"${i===se?' stroke="#ffcc33" stroke-width="2"':''}/><text x="12" y="${y+21}" font-size="17" font-weight="800" fill="${TINT[i]}">${NAMES[i]}</text>`;
-    for(let j=0;j<8;j++)h+=sunSvg(104+j*27,y+15,6.500,j<best[i]);
+  const se=season();let h='';$('chartT').textContent=(who==='A'?"Mimi's":"Sam's")+' sunshine';
+  for(let i=0;i<4;i++){const y=5+i*33,st=rowState(who,i);
+    h+=`<rect x="2" y="${y}" width="316" height="30" rx="9" fill="${i===se?'#2a3a74':'#1b2957'}"${i===se?' stroke="#ffcc33" stroke-width="2"':''}/><text x="10" y="${y+21}" font-size="16" font-weight="800" fill="${TINT[i]}">${NAMES[i]}</text>`;
+    for(let j=0;j<12;j++)h+=slot(96+j*19.200,y+15,8.500,st[j]);
   }
   $('chart').innerHTML=h;
 }
+function drawBig(){
+  $('big').hidden=!bigOn;if(!bigOn)return;
+  const se=season();let h=`<g transform="translate(46 52) scale(.5)">${(who==='A'?cat:bear)('',false)}</g><text x="84" y="40" font-size="30" font-weight="800" fill="#f3f6ff">${who==='A'?"Mimi's":"Sam's"} sunshine in one day</text>`;
+  for(let i=0;i<4;i++){const y=62+i*77,st=rowState(who,i);
+    h+=`<rect x="4" y="${y}" width="692" height="70" rx="18" fill="${i===se?'#2a3a74':'#16224d'}" stroke="${i===se?'#ffcc33':'#2a3a74'}" stroke-width="${i===se?4:2}"/>${inner(ICON[SICON[i]],14,y+11,48)}<text x="72" y="${y+45}" font-size="27" font-weight="800" fill="${TINT[i]}">${NAMES[i]}</text>`;
+    for(let j=0;j<12;j++)h+=slot(206+j*41,y+35,19,st[j]);
+  }
+  $('bigSvg').innerHTML=h;
+}
+/* the counter at the bottom of the picture: whose day it is, the twelve places, and the number caught */
+function drawHud(){
+  const on=started&&toks.length>0&&zoom<.3&&!bigOn;$('hud').hidden=!on;if(!on)return;
+  const n=toks.filter(t=>t.got).length,st=rowState(who,season());
+  let h=`<rect x="1" y="1" width="638" height="58" rx="29" fill="#0b1433" fill-opacity=".82" stroke="#2a3a74" stroke-width="2"/><g transform="translate(36 56) scale(.56)">${(who==='A'?cat:bear)('',false)}</g>`;
+  for(let j=0;j<12;j++)h+=`<g${j===n-1&&popAt===n?' class="pop"':''}>${slot(88+j*40,30,18,st[j])}</g>`;
+  h+=`<text x="596" y="46" font-size="46" font-weight="800" fill="#ffcc33" text-anchor="middle">${n}</text>`;
+  $('hudSvg').innerHTML=h;popAt=-1;
+}
 let worn={A:null,B:null};
-function dress(k){const z=asleep(k),c=(dressed&&!z?CODE[season()]:'')+(z?'z':'');if(worn[k]===c)return;worn[k]=c;const g=$('kid'+k),was=g.querySelector('.hop');g.innerHTML=(k==='A'?cat:bear)(z?'':c,z);if(was)g.querySelector('.kin').classList.add('hop')}
+function dress(k){const z=asleep(k),c=(dressed&&!z?(k==='A'?CODE[season()]:season()===0?'':'wi'):'')+(z?'z':'');if(worn[k]===c)return;worn[k]=c;const g=$('kid'+k),was=g.querySelector('.hop');g.innerHTML=(k==='A'?cat:bear)(z?'':c,z);if(was)g.querySelector('.kin').classList.add('hop')}
 function hop(k){const g=$('kid'+k).querySelector('.kin');g.classList.remove('hop');try{void g.getBBox()}catch(e){}g.classList.add('hop')}
 function drawStars(n){$('stars').innerHTML=M.map((_,i)=>`<svg viewBox="0 0 34 34"><path d="M17 2l4.6 9.6 10.4 1.4-7.6 7.3 1.9 10.4L17 25.6 7.7 30.7l1.9-10.4L2 13l10.4-1.4z" fill="${i<n?'#ffcc33':'#2a3a74'}"/></svg>`).join('')}
 function confetti(){const c=['#ffcc33','#ff6b4a','#5cbf6a','#6ec3ff','#ff7aa2'];for(let i=0;i<60;i++){const d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';d.style.background=c[i%5];d.style.animationDelay=Math.random()*.8+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),3600)}}
 
-/* little suns on the bright part of Mimi's day ring */
-function arm(){toks=[];for(let p=15;p<360;p+=30)if(lit(p))toks.push({p,got:false});armAt=theta;tokOn=true;best[season()]=0;dirty=true}
-function drawToks(){$('tokens').innerHTML=tokOn?toks.filter(t=>!t.got).map(t=>{const q=ringPt(t.p);return sunSvg(q[0].toFixed(1),(-q[1]).toFixed(1),6.500,true)}).join(''):''}
+/* little suns on the bright part of a friend's day ring */
+function arm(k){who=k;toks=[];for(let p=15;p<360;p+=30)toks.push({p,lit:lit(k,p),got:false});armAt=theta;tokOn=true;best[k][season()]=0;done[k][season()]=0;bigOn=false;dirty=true}
+function drawToks(){
+  const g=RING[who];
+  $('tokens').innerHTML=tokOn?toks.filter(t=>t.lit&&!t.got).map(t=>{const q=ringPt(who,t.p);return sunSvg(q[0].toFixed(1),(-q[1]).toFixed(1),g.tr,true)}).join(''):'';
+  let h=`<circle cx="${g.cx}" r="${g.r}" stroke="#fff" stroke-opacity=".55" stroke-width="2.500" stroke-dasharray="1 7"/>`;
+  for(let p=15;p<360;p+=30)if(lit(who,p)){const a=ringPt(who,p-15),b=ringPt(who,p+15);h+=`<path d="M${a[0].toFixed(1)} ${(-a[1]).toFixed(1)}A${g.r} ${g.r} 0 0 0 ${b[0].toFixed(1)} ${(-b[1]).toFixed(1)}" stroke="#ffe680" stroke-opacity=".55" stroke-width="${g.tr*1.6}"/>`}
+  $('ringG').innerHTML=h;
+}
+function roundEnd(){
+  done[who][season()]=1;dirty=true;
+  if(mode==='adv'){const tk=token;setTimeout(()=>{if(tk===token&&busy){bigOn=true;dirty=true}},900)}
+}
 function turnBy(d){
-  if(d<=0)return;const from=norm(phi('A'));theta+=d;dirty=true;
+  if(d<=0)return;const from=norm(phi(who));theta+=d;dirty=true;
   if(!tokOn)return;
-  let n=toks.filter(t=>t.got).length;
-  for(const t of toks)if(!t.got&&norm(t.p-from)<=d){t.got=true;n++;sfx.pop(n);best[season()]=n}
-  if(n===toks.length){
+  const lits=toks.filter(t=>t.lit);let n=lits.filter(t=>t.got).length;
+  for(const t of lits)if(!t.got&&norm(t.p-from)<=d){t.got=true;n++;popAt=n;sfx.pop(n);best[who][season()]=n}
+  const full=theta-armAt>=360;
+  if(!done[who][season()]&&n===lits.length&&(lits.length>0||full)&&(autoLeft<=0||full)){
+    roundEnd();
     if(mode==='adv'&&!busy&&mi<M.length&&M[mi].type==='catch')win();
-    else if(mode==='play'&&theta-armAt>=360){arm();best[season()]=n}
   }
+  if(mode==='play'&&full)arm(who);
 }
 
 /* camera: close on the Earth, with the Sun peeking in; wide to show the whole trip */
 function fit(x0,y0,x1,y1){let w=x1-x0,h=y1-y0;const cx=(x0+x1)/2,cy=(y0+y1)/2;if(w/h<ASP)w=h*ASP;else h=w/ASP;return[cx-w/2,cy-h/2,w,h]}
 function closeBox(){const a=rad(alpha()),ex=D*Math.cos(a),ey=-D*Math.sin(a),ux=-Math.cos(a),uy=Math.sin(a),k=D-18-52*Math.abs(Math.sin(a)),sx=ex+ux*k,sy=ey+uy*k;
-  return fit(Math.min(ex-124,sx)-8,Math.min(ey-158,sy)-8,Math.max(ex+196,sx)+8,Math.max(ey+158,sy)+8)}
+  return fit(Math.min(ex-124,sx)-8,Math.min(ey-158,sy)-8,Math.max(ex+196,sx)+8,Math.max(ey+158,sy)+30)}
 const WIDE=fit(-D-130,-D-165,D+200,D+165);
 function camera(){const c=closeBox(),e=zoom*zoom*(3-2*zoom),v=c.map((x,i)=>x+(WIDE[i]-x)*e);$('scene').setAttribute('viewBox',v.map(x=>x.toFixed(1)).join(' '));$('far').setAttribute('opacity',e.toFixed(2))}
 
@@ -382,12 +449,12 @@ function render(){
   $('beam').setAttribute('transform',`rotate(${(Math.atan2(ey,ex)*180/Math.PI).toFixed(1)})`);
   $('beam').querySelectorAll('line').forEach(l=>{l.setAttribute('x1',116);l.setAttribute('x2',D-R-14)});
   for(const k of['A','B']){
-    dress(k);const p=phi(k),q=ringPt(p);
-    $('kid'+k).setAttribute('transform',`translate(${q[0].toFixed(1)} ${(-q[1]).toFixed(1)}) rotate(${(90-p).toFixed(1)})`);
+    dress(k);const p=phi(k),q=ringPt(k,p);
+    $('kid'+k).setAttribute('transform',`translate(${q[0].toFixed(1)} ${(-q[1]).toFixed(1)}) rotate(${(90-p).toFixed(1)}) scale(${RING[k].s})`);
   }
-  drawToks();drawSky();drawChart();
+  drawToks();drawSky();drawChart();drawBig();drawHud();
   const ring=$('ring');
-  if(ringOn==='A'||ringOn==='B'){const p=phi(ringOn),q=ringPt(p);ring.setAttribute('cx',q[0]+Math.cos(rad(p))*45);ring.setAttribute('cy',-(q[1]+Math.sin(rad(p))*45));ring.setAttribute('display','')}else ring.setAttribute('display','none');
+  if(ringOn==='A'||ringOn==='B'){const p=phi(ringOn),q=ringPt(ringOn,p),o=45*RING[ringOn].s;ring.setAttribute('cx',q[0]+Math.cos(rad(p))*o);ring.setAttribute('cy',-(q[1]+Math.sin(rad(p))*o));ring.setAttribute('r',58*RING[ringOn].s);ring.setAttribute('display','')}else ring.setAttribute('display','none');
   $('sunRing').setAttribute('display',ringOn==='S'?'':'none');$('poleRing').setAttribute('display',ringOn==='P'?'':'none');
   $('status').textContent=NAMES[se]+(mode==='play'?' · Year '+(Math.floor(orb/360)+1):'');
   if(mode==='adv'&&!busy&&mi<M.length){const m=M[mi];if(m.type==='fly'&&se===m.goal)win()}
@@ -405,19 +472,26 @@ function showUI(){
   $('spin').classList.toggle('nudge',!!(step()&&step().type==='catch'));$('fly').classList.toggle('nudge',!!(step()&&step().type==='fly'));
   $('again').hidden=!(mode==='adv'&&mi>=M.length);
   $('replay').hidden=!(m);$('stars').hidden=mode!=='adv';$('status').hidden=!started;
+  $('pole').style.pointerEvents=step()&&step().target==='P'?'':'none';
   const c=$('choices');c.hidden=!(m&&m.type==='choice');document.querySelector('.bar').classList.toggle('choosing',!c.hidden);
   if(m&&m.type==='choice')c.innerHTML=m.opts.map(o=>`<button class="ans" data-a="${o[0]}">${ICON[o[0]]}${o[1]}</button>`).join('');
 }
-function ask(){const m=M[mi];busy=false;ringOn=null;vel=0;if(m.type==='catch')arm();showUI();dirty=true;play(m.say)}
+function ask(){const m=M[mi];busy=false;ringOn=null;vel=0;bigOn=false;if(m.type==='catch')arm('A');if(m.chart){who='A';toks=[];tokOn=false;bigOn=true}showUI();dirty=true;play(m.say)}
 async function win(){
-  const m=M[mi],tk=token;busy=true;vel=0;holdSpin=holdFly=false;ringOn=null;sfx.ding();drawStars(mi+1);if(m.dress)dressed=true;showUI();
-  if(m.to!==undefined){let g=Math.floor(orb/360)*360+m.to;if(g<orb)g+=360;glide=g;pendAuto=!!m.auto;tokOn=false}
+  const m=M[mi],tk=token;busy=true;vel=0;holdSpin=holdFly=false;ringOn=null;bigOn=false;sfx.ding();drawStars(mi+1);if(m.dress)dressed=true;showUI();
+  if(m.to!==undefined){let g=Math.floor(orb/360)*360+m.to;if(g<orb)g+=360;glide=g;tokOn=false;toks=[]}
   if(m.wide)wideHold=true;
-  dirty=true;render();hop('A');hop('B');await play(m.ok);await wait(600);
+  dirty=true;render();
+  for(let i=0;i<m.ok.length;i++){
+    if(m.auto&&m.auto[1]===i)pendAuto=m.auto[0];
+    await play(m.ok[i]);if(tk!==token)return;
+  }
+  while(pendAuto||autoLeft>0){await wait(200);if(tk!==token)return}
+  await wait(m.auto||m.type==='catch'?1800:600);
   if(tk!==token)return;
-  wideHold=false;if(m.type==='catch')tokOn=false;
+  wideHold=false;tokOn=false;
   mi++;
-  if(mi<M.length)ask();else{showUI();confetti();sfx.ding();play('n_fin')}
+  if(mi<M.length)ask();else{bigOn=false;showUI();dirty=true;confetti();sfx.ding();play('n_fin')}
 }
 function miss(){const m=M[mi];sfx.boop();if(m.type==='tap')ringOn=m.target;dirty=true;play(m.hint||'n_try')}
 function tapAdv(k){ /* true when the adventure used the tap */
@@ -426,7 +500,7 @@ function tapAdv(k){ /* true when the adventure used the tap */
   if(mi<M.length){const m=M[mi];if(m.type==='tap'){m.target===k?win():miss();return true}}
   return false;
 }
-function tapKid(k){hop(k);if(tapAdv(k))return;const set=asleep(k)?KID['z'+k]:KID[k][season()];play(set[idx[k]++%set.length])}
+function tapKid(k){hop(k);if(tapAdv(k))return;if(mode==='play'&&who!==k&&zoom<.2)arm(k);const set=asleep(k)?KID['z'+k]:KID[k][season()];play(set[idx[k]++%set.length])}
 function tapPole(){if(mode==='adv'&&step()&&step().type==='tap')tapAdv('P')}
 function tapSun(){
   const sun=$('sun');sun.classList.remove('shake');try{void sun.getBBox()}catch(e){}sun.classList.add('shake');
@@ -438,8 +512,8 @@ function tapSun(){
 async function setMode(m){
   mode=m;const tk=++token;try{va.pause()}catch(e){}
   document.querySelectorAll('.tabs [data-m]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===m));
-  theta=0;orb=0;vel=0;glide=null;holdSpin=holdFly=false;ringOn=null;prevS=null;dressed=m==='play';wideHold=false;autoLeft=0;pendAuto=false;best=[0,0,0,0];tokOn=false;zoom=0;
-  if(m==='play'){busy=false;mi=M.length;arm();showUI();$('again').hidden=true;dirty=true;play('n_play')}
+  theta=0;orb=0;vel=0;glide=null;holdSpin=holdFly=false;ringOn=null;prevS=null;dressed=m==='play';wideHold=false;autoLeft=0;pendAuto=null;best={A:[0,0,0,0],B:[0,0,0,0]};done={A:[0,0,0,0],B:[0,0,0,0]};tokOn=false;toks=[];bigOn=false;who='A';zoom=0;
+  if(m==='play'){busy=false;mi=M.length;arm('A');showUI();$('again').hidden=true;dirty=true;play('n_play')}
   else{mi=0;busy=true;drawStars(0);showUI();dirty=true;await play('n_start');await wait(300);if(tk===token)ask()}
 }
 
@@ -449,11 +523,11 @@ function frame(t){
   const flying=holdFly&&canFly()&&glide===null;
   const zt=(flying||glide!==null||wideHold)?1:0;
   if(Math.abs(zt-zoom)>.001){zoom+=Math.sign(zt-zoom)*Math.min(Math.abs(zt-zoom),dt*1.8);dirty=true}
-  if(glide!==null){if(orb<glide){orb=Math.min(glide,orb+70*dt);theta+=200*dt;dirty=true}else{glide=null;if(pendAuto){pendAuto=false;autoLeft=-1}}}
-  else if(flying&&zoom>.6){orb+=FLY*dt;theta+=200*dt;tokOn=false;dirty=true}
-  else if(mode==='play'&&!tokOn&&zoom<.05)arm();
-  if(autoLeft===-1&&zoom<.05){arm();autoLeft=360}
-  if(autoLeft>0){const d=Math.min(autoLeft,130*dt);autoLeft-=d;turnBy(d);if(autoLeft<=0)autoLeft=0}
+  if(glide!==null){if(orb<glide){orb=Math.min(glide,orb+70*dt);theta+=200*dt;dirty=true}else glide=null}
+  else if(flying&&zoom>.6){orb+=FLY*dt;theta+=200*dt;tokOn=false;toks=[];dirty=true}
+  else if(mode==='play'&&!tokOn&&zoom<.05)arm(who);
+  if(pendAuto&&glide===null&&zoom<.05&&autoLeft<=0&&!wideHold){arm(pendAuto);pendAuto=null;autoLeft=360}
+  if(autoLeft>0){const d=Math.min(autoLeft,120*dt);autoLeft-=d;if(autoLeft<.01)autoLeft=0;turnBy(d+(autoLeft===0?.5:0))}
   else if(canTurn()){
     let w=0;if(holdSpin)w+=TURN;
     if(vel>0&&!drag){w+=vel;vel*=Math.exp(-1.4*dt);if(vel<4)vel=0}
@@ -471,7 +545,7 @@ function holder(btn,set){
 holder($('spin'),v=>holdSpin=v);holder($('fly'),v=>holdFly=v);
 
 const svg=$('scene');
-function angAt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform($('earth').getScreenCTM().inverse());return Math.atan2(-q.y,q.x-PX)*180/Math.PI}
+function angAt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform($('earth').getScreenCTM().inverse());return Math.atan2(-q.y,q.x-20)*180/Math.PI}
 $('earth').addEventListener('pointerdown',e=>{
   const k=e.target.closest('[data-kid]'),po=e.target.closest('[data-pole]');
   drag={ang:angAt(e),x:e.clientX,y:e.clientY,moved:false,kid:k?k.dataset.kid:null,pole:!!po,t:performance.now()};vel=0;
